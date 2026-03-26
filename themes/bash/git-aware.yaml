@@ -1,0 +1,172 @@
+name: Git Aware
+id: git-aware
+shell: bash
+author: mongsill6
+description: A prompt that displays current git branch and dirty/clean status with color indicators
+version: 1.0.0
+tags:
+  - git
+  - branch
+  - status
+  - developer
+  - vcs
+
+requires:
+  nerd_font: false
+  tools:
+    - git
+
+colors:
+  primary: "#0087AF"      # Cyan for git info
+  secondary: "#FF5F00"    # Orange for branch name
+  background: "#1C1C1C"   # Dark background
+  clean: "#87AF00"        # Green for clean status
+  dirty: "#D70000"        # Red for dirty status
+  neutral: "#808080"      # Gray for neutral elements
+
+segments:
+  - type: user
+    format: "%n"
+    color: primary
+
+  - type: host
+    format: "@%m"
+    color: primary
+
+  - type: path
+    format: " %~"
+    color: primary
+
+  - type: git-branch
+    format: " on %s"
+    color: secondary
+    show_when: in_git_repo
+
+  - type: git-status
+    format: " %s"
+    color: clean
+    dirty_color: dirty
+    show_when: in_git_repo
+
+prompt:
+  code: |
+    # Git Aware Bash Prompt
+    # Enable bash completion for git
+    if [ -f /usr/share/bash-completion/completions/git ]; then
+        . /usr/share/bash-completion/completions/git
+    fi
+
+    # Colors
+    COLOR_RESET='\033[0m'
+    COLOR_CYAN='\033[0;36m'
+    COLOR_ORANGE='\033[0;33m'
+    COLOR_GREEN='\033[0;32m'
+    COLOR_RED='\033[0;31m'
+    COLOR_GRAY='\033[0;37m'
+
+    # Helper function to get git branch
+    __get_git_branch() {
+        local branch
+        branch=$(git branch --show-current 2>/dev/null)
+        if [ -n "$branch" ]; then
+            echo "$branch"
+        fi
+    }
+
+    # Helper function to check if git repo is dirty
+    __is_git_dirty() {
+        if git rev-parse --git-dir > /dev/null 2>&1; then
+            if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+                return 0  # dirty
+            fi
+        fi
+        return 1  # clean
+    }
+
+    # Helper function to build git status string
+    __git_status_prompt() {
+        local branch
+        branch=$(__get_git_branch)
+
+        if [ -z "$branch" ]; then
+            return
+        fi
+
+        if __is_git_dirty; then
+            echo -e "${COLOR_ORANGE} on ${COLOR_RED}${branch}${COLOR_RESET} ${COLOR_RED}●${COLOR_RESET}"
+        else
+            echo -e "${COLOR_ORANGE} on ${COLOR_GREEN}${branch}${COLOR_RESET} ${COLOR_GREEN}✓${COLOR_RESET}"
+        fi
+    }
+
+    # Main prompt
+    export PS1="${COLOR_CYAN}\u@\h${COLOR_RESET}${COLOR_CYAN} \w${COLOR_RESET}\$(__git_status_prompt)\n${COLOR_CYAN}\$${COLOR_RESET} "
+
+  install_instructions: |
+    Installation Instructions:
+
+    1. Add the following to your ~/.bashrc file:
+
+    ```bash
+    # Git Aware Prompt
+    COLOR_RESET='\033[0m'
+    COLOR_CYAN='\033[0;36m'
+    COLOR_ORANGE='\033[0;33m'
+    COLOR_GREEN='\033[0;32m'
+    COLOR_RED='\033[0;31m'
+
+    __get_git_branch() {
+        local branch
+        branch=$(git branch --show-current 2>/dev/null)
+        if [ -n "$branch" ]; then
+            echo "$branch"
+        fi
+    }
+
+    __is_git_dirty() {
+        if git rev-parse --git-dir > /dev/null 2>&1; then
+            if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+                return 0
+            fi
+        fi
+        return 1
+    }
+
+    __git_status_prompt() {
+        local branch
+        branch=$(__get_git_branch)
+        if [ -z "$branch" ]; then
+            return
+        fi
+        if __is_git_dirty; then
+            echo -e "${COLOR_ORANGE} on ${COLOR_RED}${branch}${COLOR_RESET} ${COLOR_RED}●${COLOR_RESET}"
+        else
+            echo -e "${COLOR_ORANGE} on ${COLOR_GREEN}${branch}${COLOR_RESET} ${COLOR_GREEN}✓${COLOR_RESET}"
+        fi
+    }
+
+    export PS1="${COLOR_CYAN}\u@\h${COLOR_RESET}${COLOR_CYAN} \w${COLOR_RESET}\$(__git_status_prompt)\n${COLOR_CYAN}\$${COLOR_RESET} "
+    ```
+
+    2. Reload your shell configuration:
+    ```bash
+    source ~/.bashrc
+    ```
+
+    3. Navigate to a git repository to see the prompt in action.
+
+examples:
+  - description: "Clean git repository"
+    output: "user@host ~/project on main ✓\n$ "
+
+  - description: "Dirty git repository with uncommitted changes"
+    output: "user@host ~/project on develop ●\n$ "
+
+  - description: "Non-git directory"
+    output: "user@host ~/Documents\n$ "
+
+metadata:
+  created_at: 2026-03-27
+  updated_at: 2026-03-27
+  license: MIT
+  repository: https://github.com/awesome-cli-prompts/themes

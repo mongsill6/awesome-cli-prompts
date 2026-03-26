@@ -1,0 +1,31 @@
+name: Minimal Clean
+id: minimal-clean
+shell: bash
+author: mongsill6
+description: A clean, minimal prompt with directory and arrow
+version: 1.0.0
+tags:
+  - minimal
+  - clean
+  - beginner-friendly
+requires:
+  nerd_font: false
+  tools: []
+
+colors:
+  primary: "#5fa4e6"
+  secondary: "#e6a25f"
+  background: any
+
+segments:
+  - type: directory
+    style: "38;5;39"
+    position: left
+  - type: character
+    style: "38;5;208"
+    position: left
+
+prompt:
+  code: |
+    PS1='\[\e[38;5;39m\]\W\[\e[0m\] \[\e[38;5;208m\]❯\[\e[0m\] '
+  install_instructions: "Add the PS1 line to your ~/.bashrc"

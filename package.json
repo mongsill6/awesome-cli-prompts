@@ -1,0 +1,52 @@
+{
+  "name": "awesome-cli-prompts",
+  "version": "0.1.0",
+  "description": "A curated collection of beautiful CLI prompt themes with an installer tool",
+  "main": "src/index.js",
+  "bin": {
+    "awesome-cli-prompts": "src/cli.js",
+    "acp": "src/cli.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "preview": "node scripts/generate-preview.js",
+    "validate": "node scripts/validate-themes.js"
+  },
+  "keywords": [
+    "cli",
+    "terminal",
+    "prompt",
+    "bash",
+    "zsh",
+    "fish",
+    "starship",
+    "theme",
+    "PS1",
+    "shell"
+  ],
+  "author": "mongsill6",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "github:mongsill6/awesome-cli-prompts"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.3.5",
+    "ora": "^8.0.1",
+    "yaml": "^2.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.5",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.2.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,71 @@
+name: Async Git
+id: async-git
+shell: zsh
+author: mongsill6
+description: Fast prompt with async git status using zsh/zpty
+version: 1.0.0
+tags:
+  - async
+  - git
+  - performance
+requires:
+  nerd_font: false
+  tools:
+    - git
+colors:
+  primary: "#87d7ff"
+  secondary: "#ff8787"
+  background: dark
+segments:
+  - type: directory
+    style: minimal
+    position: left
+  - type: git_branch
+    style: inline
+    position: left
+  - type: git_status
+    style: indicator
+    position: left
+prompt:
+  code: |
+    # Async Git - fast prompt with git status via vcs_info
+    autoload -Uz vcs_info
+    autoload -Uz add-zsh-hook
+
+    zstyle ':vcs_info:*' enable git
+    zstyle ':vcs_info:*' check-for-changes true
+    zstyle ':vcs_info:*' stagedstr '+'
+    zstyle ':vcs_info:*' unstagedstr '*'
+    zstyle ':vcs_info:git:*' formats '%b%c%u'
+    zstyle ':vcs_info:git:*' actionformats '%b|%a%c%u'
+
+    _asyncgit_precmd() {
+      vcs_info
+
+      _asyncgit_git_info=""
+      if [[ -n "${vcs_info_msg_0_}" ]]; then
+        local branch="${vcs_info_msg_0_}"
+        local status_icons=""
+        local ahead behind
+
+        ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
+        behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
+
+        if [[ -z "$(git status --porcelain 2>/dev/null)" ]]; then
+          status_icons="%F{green}ok%f"
+        else
+          status_icons="%F{#ff8787}x%f"
+        fi
+
+        [[ "${ahead:-0}" -gt 0 ]] && status_icons="${status_icons} %F{cyan}up${ahead}%f"
+        [[ "${behind:-0}" -gt 0 ]] && status_icons="${status_icons} %F{magenta}dn${behind}%f"
+
+        _asyncgit_git_info=" %F{#87d7ff}${branch}%f [${status_icons}]"
+      fi
+    }
+    add-zsh-hook precmd _asyncgit_precmd
+
+    setopt PROMPT_SUBST
+
+    PROMPT='%F{#87d7ff}%~%f${_asyncgit_git_info} %F{%(?.#87d7ff.#ff8787)}>>%f '
+  install_instructions: "Source in ~/.zshrc. Git info updates on each prompt."

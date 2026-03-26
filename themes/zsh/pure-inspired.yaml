@@ -1,0 +1,44 @@
+name: Pure Inspired
+id: pure-inspired
+shell: zsh
+author: mongsill6
+description: Clean async prompt inspired by sindresorhus/pure with git info
+version: 1.0.0
+tags:
+  - minimal
+  - async
+  - git
+requires:
+  nerd_font: false
+  tools:
+    - git
+colors:
+  primary: "#5f87ff"
+  secondary: "#af87ff"
+  background: dark
+segments:
+  - type: directory
+    style: bold
+    position: left
+  - type: git_branch
+    style: plain
+    position: left
+  - type: exit_code
+    style: plain
+    position: left
+prompt:
+  code: |
+    autoload -Uz vcs_info
+    zstyle ':vcs_info:git:*' formats '%b'
+    zstyle ':vcs_info:*' enable git
+
+    precmd() {
+      vcs_info
+    }
+
+    setopt prompt_subst
+
+    PROMPT='
+    %F{blue}%~%f ${vcs_info_msg_0_:+%F{magenta}${vcs_info_msg_0_}%f}
+    %(?.%F{magenta}.%F{red})❯%f '
+  install_instructions: "Source this in your ~/.zshrc"

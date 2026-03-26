@@ -1,0 +1,78 @@
+name: Docker Aware
+id: docker-aware
+shell: zsh
+author: mongsill6
+description: Prompt that shows Docker container status and active environment
+version: 1.0.0
+tags:
+  - devops
+  - docker
+  - git
+  - containers
+requires:
+  nerd_font: false
+  tools:
+    - git
+    - docker
+colors:
+  primary: "#2496ed"
+  secondary: "#ff8c00"
+  background: dark
+segments:
+  - type: docker
+    style: powerline
+    position: left
+  - type: directory
+    style: powerline
+    position: left
+  - type: git_branch
+    style: powerline
+    position: left
+  - type: exit_code
+    style: powerline
+    position: left
+prompt:
+  code: |
+    # Docker Aware ZSH Theme
+    # Shows Docker container status and active environment
+
+    autoload -Uz vcs_info
+    setopt PROMPT_SUBST
+
+    zstyle ':vcs_info:git:*' formats '%b'
+    zstyle ':vcs_info:git:*' actionformats '%b|%a'
+    zstyle ':vcs_info:*' enable git
+
+    _docker_aware_precmd() {
+      vcs_info
+
+      local docker_info=""
+      if command -v docker &>/dev/null; then
+        local count
+        count=$(docker ps -q 2>/dev/null | wc -l | tr -d ' ')
+        if [[ "$count" -gt 0 ]]; then
+          docker_info="%F{#2496ed}[docker: ${count} running]%f "
+        else
+          docker_info="%F{#2496ed}[docker: idle]%f "
+        fi
+      fi
+
+      local docker_host_info=""
+      if [[ -n "$DOCKER_HOST" ]]; then
+        docker_host_info="%F{#ff8c00}DOCKER_HOST=${DOCKER_HOST}%f "
+      fi
+
+      local git_info=""
+      if [[ -n "${vcs_info_msg_0_}" ]]; then
+        git_info="%F{green}git:(${vcs_info_msg_0_})%f "
+      fi
+
+      local exit_code="%(?.%F{green}ok%f.%F{red}err:%?%f)"
+
+      local nl=$'\n'
+      PROMPT="${docker_info}${docker_host_info}%F{#2496ed}%~%f ${git_info}${exit_code}${nl}%F{#2496ed}>%f %# "
+    }
+
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd _docker_aware_precmd
+  install_instructions: "Source in ~/.zshrc. Install Docker for container status."

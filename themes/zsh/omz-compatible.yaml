@@ -1,0 +1,57 @@
+name: OMZ Compatible
+id: omz-compatible
+shell: zsh
+author: mongsill6
+description: Oh My Zsh compatible theme with user, host, directory, and git
+version: 1.0.0
+tags:
+  - omz
+  - traditional
+  - git
+requires:
+  nerd_font: false
+  tools:
+    - git
+colors:
+  primary: "#5faf5f"
+  secondary: "#5fafd7"
+  background: dark
+segments:
+  - type: user
+    style: bold
+    position: left
+  - type: host
+    style: bold
+    position: left
+  - type: directory
+    style: bold
+    position: left
+  - type: git_branch
+    style: plain
+    position: left
+  - type: git_status
+    style: plain
+    position: left
+prompt:
+  code: |
+    autoload -Uz vcs_info
+    zstyle ':vcs_info:git:*' formats '%b'
+    zstyle ':vcs_info:git:*' actionformats '%b|%a'
+    zstyle ':vcs_info:*' enable git
+
+    precmd() {
+      vcs_info
+    }
+
+    setopt prompt_subst
+
+    _git_dirty() {
+      if [[ -n $(command git status --porcelain 2>/dev/null) ]]; then
+        echo "%F{red}✗%f"
+      else
+        echo "%F{green}✔%f"
+      fi
+    }
+
+    PROMPT='%F{green}%n@%m%f:%F{cyan}%~%f ${vcs_info_msg_0_:+%F{yellow}(${vcs_info_msg_0_})%f $(_git_dirty) }%(!.#.$) '
+  install_instructions: "Copy to ~/.oh-my-zsh/custom/themes/ or source directly"

@@ -1,0 +1,51 @@
+name: Right Prompt
+id: right-prompt
+shell: zsh
+author: mongsill6
+description: Minimal left prompt with rich right-side information display
+version: 1.0.0
+tags:
+  - minimal
+  - right-prompt
+  - git
+  - time
+requires:
+  nerd_font: false
+  tools:
+    - git
+colors:
+  primary: "#af87ff"
+  secondary: "#5fd7af"
+  background: dark
+segments:
+  - type: directory
+    style: purple
+    position: left
+  - type: git_branch
+    style: green
+    position: right
+  - type: time
+    style: cyan
+    position: right
+  - type: exit_code
+    style: red
+    position: right
+prompt:
+  code: |
+    # Right Prompt - zsh theme
+    # Left: directory and prompt character
+    # Right: git branch, time, exit code if non-zero
+
+    autoload -Uz vcs_info
+    setopt prompt_subst
+
+    zstyle ':vcs_info:git:*' formats '%F{green}%b%f'
+    zstyle ':vcs_info:*' enable git
+
+    precmd() {
+      vcs_info
+    }
+
+    PROMPT='%F{magenta}%~%f %(?..%F{red}[%?]%f )%B%F{white}❯%f%b '
+    RPROMPT='${vcs_info_msg_0_:+${vcs_info_msg_0_} }%F{cyan}%*%f'
+  install_instructions: "Source in ~/.zshrc. RPROMPT disappears when command line is long."

@@ -1,0 +1,68 @@
+name: Powerlevel10k Lite
+id: p10k-lite
+shell: zsh
+author: mongsill6
+description: Lightweight p10k-inspired prompt with powerline segments
+version: 1.0.0
+tags:
+  - powerline
+  - nerd-font
+  - git
+  - feature-rich
+requires:
+  nerd_font: true
+  tools:
+    - git
+colors:
+  primary: "#ffaf00"
+  secondary: "#5f87ff"
+  background: dark
+segments:
+  - type: user
+    style: bold
+    position: left
+  - type: directory
+    style: powerline
+    position: left
+  - type: git_branch
+    style: powerline
+    position: left
+  - type: git_status
+    style: powerline
+    position: left
+  - type: exit_code
+    style: indicator
+    position: right
+  - type: time
+    style: dim
+    position: right
+prompt:
+  code: |
+    # Powerlevel10k Lite - lightweight p10k-inspired prompt
+    autoload -Uz vcs_info
+    autoload -Uz add-zsh-hook
+
+    zstyle ':vcs_info:*' enable git
+    zstyle ':vcs_info:*' check-for-changes true
+    zstyle ':vcs_info:*' stagedstr '%F{green}+%f'
+    zstyle ':vcs_info:*' unstagedstr '%F{red}!%f'
+    zstyle ':vcs_info:git:*' formats '%b%c%u'
+    zstyle ':vcs_info:git:*' actionformats '%b|%a%c%u'
+
+    _p10klite_precmd() {
+      vcs_info
+    }
+    add-zsh-hook precmd _p10klite_precmd
+
+    setopt PROMPT_SUBST
+
+    _p10klite_git_segment() {
+      [[ -n "${vcs_info_msg_0_}" ]] || return
+      echo -n "%F{#1c1c1c}%K{#ffaf00} \ue0a0 ${vcs_info_msg_0_} %k%F{#ffaf00}\ue0b0%f"
+    }
+
+    local newline=$'\n'
+    PROMPT="%K{#5f5f5f}%B%F{#ffffff} \uf007 %n %b%f%k%F{#5f5f5f}%K{#5f87ff}\ue0b0%f%F{#ffffff} \uf07c %1~ %f%k%F{#5f87ff}%K{#ffaf00}\ue0b0%f\$(_p10klite_git_segment)%E${newline}%F{#ffaf00}\uf054%f "
+
+    RPROMPT='%(?.%F{green}\uf00c%f.%F{red}\uf00d %?%f) %F{#5f5f5f}\ue0b2%f%K{#5f5f5f}%F{#bcbcbc} \uf017 %D{%H:%M:%S} %f%k'
+  install_instructions: "Requires a Nerd Font. Source in ~/.zshrc"

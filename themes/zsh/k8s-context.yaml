@@ -1,0 +1,69 @@
+name: Kubernetes Context
+id: k8s-context
+shell: zsh
+author: mongsill6
+description: DevOps prompt showing Kubernetes context and namespace
+version: 1.0.0
+tags:
+  - devops
+  - kubernetes
+  - k8s
+  - git
+requires:
+  nerd_font: false
+  tools:
+    - git
+    - kubectl
+colors:
+  primary: "#326ce5"
+  secondary: "#5fd75f"
+  background: dark
+segments:
+  - type: k8s
+    style: powerline
+    position: left
+  - type: directory
+    style: powerline
+    position: left
+  - type: git_branch
+    style: powerline
+    position: left
+  - type: exit_code
+    style: powerline
+    position: left
+prompt:
+  code: |
+    # Kubernetes Context Prompt
+    autoload -Uz vcs_info add-zsh-hook
+
+    zstyle ':vcs_info:git:*' formats ' %F{yellow}%b%f'
+    zstyle ':vcs_info:*' enable git
+
+    _k8s_get_context() {
+      if command -v kubectl &>/dev/null; then
+        local ctx ns
+        ctx=$(kubectl config current-context 2>/dev/null || echo "N/A")
+        ns=$(kubectl config view --minify --output 'jsonpath={..namespace}' 2>/dev/null)
+        [[ -z "$ns" ]] && ns="default"
+        echo "${ctx}:${ns}"
+      else
+        echo "N/A"
+      fi
+    }
+
+    _k8s_precmd() {
+      vcs_info
+      local k8s_info
+      k8s_info="$(_k8s_get_context)"
+
+      local k8s_segment="%F{#326ce5}${k8s_info}%f"
+      local dir="%F{#5fd75f}%~%f"
+      local git="${vcs_info_msg_0_}"
+      local exit_code="%(?.%F{green}ok%f.%F{red}%?%f)"
+
+      local nl=$'\n'
+      PROMPT="${k8s_segment} ${dir}${git} ${exit_code}${nl}%F{#326ce5}%f "
+    }
+
+    add-zsh-hook precmd _k8s_precmd
+  install_instructions: "Source in ~/.zshrc. Install kubectl for k8s context display."

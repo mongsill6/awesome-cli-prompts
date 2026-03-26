@@ -1,0 +1,53 @@
+name: Two Line Time
+id: two-line-time
+shell: zsh
+author: mongsill6
+description: Two-line prompt with timestamp, directory, and git on separate lines
+version: 1.0.0
+tags:
+  - two-line
+  - time
+  - git
+  - informative
+requires:
+  nerd_font: false
+  tools:
+    - git
+colors:
+  primary: "#d7af5f"
+  secondary: "#87afd7"
+  background: dark
+segments:
+  - type: time
+    style: yellow
+    position: left
+  - type: user
+    style: default
+    position: left
+  - type: directory
+    style: blue
+    position: left
+  - type: git_branch
+    style: green
+    position: left
+  - type: exit_code
+    style: red
+    position: left
+prompt:
+  code: |
+    # Two Line Time - zsh theme
+    # Line 1: [HH:MM:SS] user@host ~/path (git:branch)
+    # Line 2: $ or # prompt
+
+    autoload -Uz vcs_info
+    setopt prompt_subst
+
+    zstyle ':vcs_info:git:*' formats ' %F{green}(git:%b)%f'
+    zstyle ':vcs_info:*' enable git
+
+    precmd() {
+      vcs_info
+    }
+
+    PROMPT=$'%F{yellow}[%*]%f %n@%m %F{blue}%~%f${vcs_info_msg_0_}\n%(!.#.$) '
+  install_instructions: "Source in ~/.zshrc"

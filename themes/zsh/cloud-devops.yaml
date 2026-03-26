@@ -1,0 +1,106 @@
+name: Cloud DevOps
+id: cloud-devops
+shell: zsh
+author: mongsill6
+description: All-in-one DevOps prompt with cloud provider, k8s, docker, and git info
+version: 1.0.0
+tags:
+  - devops
+  - cloud
+  - kubernetes
+  - docker
+  - git
+  - feature-rich
+requires:
+  nerd_font: false
+  tools:
+    - git
+    - kubectl
+    - docker
+colors:
+  primary: "#ff9900"
+  secondary: "#326ce5"
+  background: dark
+segments:
+  - type: user
+    style: powerline
+    position: left
+  - type: directory
+    style: powerline
+    position: left
+  - type: git_branch
+    style: powerline
+    position: left
+  - type: k8s
+    style: powerline
+    position: right
+  - type: docker
+    style: powerline
+    position: right
+  - type: exit_code
+    style: powerline
+    position: right
+  - type: time
+    style: powerline
+    position: right
+prompt:
+  code: |
+    # Cloud DevOps ZSH Theme
+    # All-in-one DevOps prompt with cloud provider, k8s, docker, and git info
+
+    autoload -Uz vcs_info
+    setopt PROMPT_SUBST
+
+    zstyle ':vcs_info:git:*' formats '%b'
+    zstyle ':vcs_info:git:*' actionformats '%b|%a'
+    zstyle ':vcs_info:*' enable git
+
+    _cloud_devops_precmd() {
+      vcs_info
+
+      # Left prompt components
+      local user_info="%F{#ff9900}%n%f"
+      local dir_info="%F{cyan}%~%f"
+
+      local git_info=""
+      if [[ -n "${vcs_info_msg_0_}" ]]; then
+        git_info=" %F{green}git:(${vcs_info_msg_0_})%f"
+      fi
+
+      # Right prompt components
+      local k8s_info=""
+      if command -v kubectl &>/dev/null; then
+        local ctx
+        ctx=$(kubectl config current-context 2>/dev/null)
+        if [[ -n "$ctx" ]]; then
+          k8s_info="%F{#326ce5}k8s:${ctx}%f "
+        fi
+      fi
+
+      local docker_info=""
+      if command -v docker &>/dev/null; then
+        local count
+        count=$(docker ps -q 2>/dev/null | wc -l | tr -d ' ')
+        if [[ "$count" -gt 0 ]]; then
+          docker_info="%F{#2496ed}docker:${count}%f "
+        fi
+      fi
+
+      local cloud_info=""
+      if [[ -n "$AWS_PROFILE" ]]; then
+        cloud_info="%F{#ff9900}aws:${AWS_PROFILE}%f "
+      elif [[ -n "$GOOGLE_CLOUD_PROJECT" ]]; then
+        cloud_info="%F{#4285f4}gcp:${GOOGLE_CLOUD_PROJECT}%f "
+      fi
+
+      local exit_indicator="%(?.%F{green}ok%f.%F{red}%?%f)"
+      local time_info="%F{yellow}%T%f"
+
+      local nl=$'\n'
+      PROMPT="${user_info} ${dir_info}${git_info}${nl}%F{#ff9900}>%f "
+      RPROMPT="${k8s_info}${docker_info}${cloud_info}${exit_indicator} ${time_info}"
+    }
+
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd _cloud_devops_precmd
+  install_instructions: "Source in ~/.zshrc. Install kubectl and docker for full functionality."

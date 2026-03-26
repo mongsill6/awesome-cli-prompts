@@ -1,0 +1,86 @@
+name: Transient Prompt
+id: transient-prompt
+shell: zsh
+author: mongsill6
+description: Rich prompt that collapses to minimal after command execution
+version: 1.0.0
+tags:
+  - transient
+  - minimal
+  - clean
+  - git
+requires:
+  nerd_font: false
+  tools:
+    - git
+colors:
+  primary: "#5fafff"
+  secondary: "#ff5f87"
+  background: dark
+segments:
+  - type: directory
+    style: powerline
+    position: left
+  - type: git_branch
+    style: powerline
+    position: left
+  - type: exit_code
+    style: powerline
+    position: left
+  - type: time
+    style: plain
+    position: right
+prompt:
+  code: |
+    # Transient Prompt - collapses previous prompts to minimal
+    autoload -Uz vcs_info add-zsh-hook
+
+    zstyle ':vcs_info:git:*' formats ' %F{#ff5f87}%b%f'
+    zstyle ':vcs_info:*' enable git
+
+    _transient_precmd() {
+      vcs_info
+      local dir="%F{#5fafff}%~%f"
+      local git="${vcs_info_msg_0_}"
+      local exit_code="%(?.%F{green}ok%f.%F{red}%?%f)"
+      local time_now="%F{245}%D{%H:%M:%S}%f"
+
+      local nl=$'\n'
+      PROMPT="${dir}${git} ${exit_code}${nl}%F{#5fafff}%(!.#.)%f "
+      RPROMPT="${time_now}"
+    }
+
+    add-zsh-hook precmd _transient_precmd
+
+    # Transient prompt: collapse previous prompts to minimal
+    _transient_set_prompt() {
+      PROMPT="%F{#5fafff}%f "
+      RPROMPT=""
+      zle reset-prompt
+      zle accept-line
+    }
+
+    zle -N _transient_accept_line _transient_set_prompt
+
+    _transient_zle_line_init() {
+      [[ "$CONTEXT" == "start" ]] || return 0
+      (( ${+_transient_returning} )) && {
+        unset _transient_returning
+        return 0
+      }
+    }
+
+    zle -N zle-line-init _transient_zle_line_init
+
+    # Override accept-line to enable transient behavior
+    _transient_accept() {
+      _transient_returning=1
+      PROMPT="%F{#5fafff}%f "
+      RPROMPT=""
+      zle reset-prompt
+      unset _transient_returning
+      zle .accept-line
+    }
+
+    zle -N accept-line _transient_accept
+  install_instructions: "Source in ~/.zshrc. Previous prompts will appear minimal."

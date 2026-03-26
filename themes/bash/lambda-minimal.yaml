@@ -1,0 +1,47 @@
+name: Lambda Minimal
+id: lambda-minimal
+shell: bash
+author: mongsill6
+version: 1.0.0
+description: Ultra-minimal prompt inspired by lambda calculus notation
+tags: [minimal, lambda, elegant, clean]
+requires:
+  nerd_font: false
+  tools: []
+colors:
+  primary: "#af87ff"
+  secondary: "#5f5faf"
+  background: dark
+segments:
+  - type: directory
+    style: "38;5;141"
+    position: left
+  - type: exit_code
+    style: "38;5;160"
+    position: left
+  - type: character
+    style: "38;5;141"
+    position: left
+prompt:
+  code: |
+    __lambda_minimal_prompt() {
+      local EXIT_CODE=$?
+      local RESET='\[\e[0m\]'
+
+      # Colors
+      local C_DIR='\[\e[38;5;141m\]'
+      local C_LAMBDA_OK='\[\e[38;5;141m\]'
+      local C_LAMBDA_ERR='\[\e[38;5;160m\]'
+
+      local C_LAMBDA
+      if [ "$EXIT_CODE" -eq 0 ]; then
+        C_LAMBDA="$C_LAMBDA_OK"
+      else
+        C_LAMBDA="$C_LAMBDA_ERR"
+      fi
+
+      PS1="${C_DIR}\W${RESET} ${C_LAMBDA}λ${RESET} "
+    }
+
+    PROMPT_COMMAND=__lambda_minimal_prompt
+  install_instructions: "Add to ~/.bashrc"

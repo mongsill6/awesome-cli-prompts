@@ -1,0 +1,52 @@
+name: Corporate Clean
+id: corporate-clean
+shell: bash
+author: mongsill6
+version: 1.0.0
+description: Professional, no-nonsense prompt for corporate environments
+tags: [corporate, professional, clean, business]
+requires:
+  nerd_font: false
+  tools: [git]
+colors:
+  primary: "#4a90d9"
+  secondary: "#6c757d"
+  background: any
+segments:
+  - type: time
+    style: "38;5;244"
+    position: left
+  - type: user
+    style: "38;5;75"
+    position: left
+  - type: host
+    style: "38;5;75"
+    position: left
+  - type: directory
+    style: "38;5;75"
+    position: left
+  - type: git_branch
+    style: "38;5;244"
+    position: left
+  - type: exit_code
+    style: "38;5;196"
+    position: left
+prompt:
+  code: |
+    __corp_git_branch() {
+      local branch
+      branch=$(git symbolic-ref --short HEAD 2>/dev/null) || return
+      printf ' \001\e[38;5;244m\002(%s)\001\e[0m\002' "$branch"
+    }
+
+    __corp_exit_code() {
+      local code=$1
+      if [ "$code" -ne 0 ]; then
+        printf ' \001\e[38;5;196m\002[exit:%s]\001\e[0m\002' "$code"
+      fi
+    }
+
+    PROMPT_COMMAND='__corp_last_exit=$?; __corp_ps1_time=$(date +%H:%M)'
+
+    PS1='\[\e[38;5;244m\][${__corp_ps1_time}]\[\e[0m\] \[\e[38;5;75m\]\u@\h\[\e[0m\]:\[\e[38;5;75m\]\w\[\e[0m\]$(__corp_git_branch)$(__corp_exit_code ${__corp_last_exit}) \$ '
+  install_instructions: "Add to ~/.bashrc"

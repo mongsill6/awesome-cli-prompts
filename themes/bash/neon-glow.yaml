@@ -1,0 +1,49 @@
+name: Neon Glow
+id: neon-glow
+shell: bash
+author: mongsill6
+version: 1.0.0
+description: Vibrant neon colors with a cyberpunk aesthetic
+tags: [neon, cyberpunk, colorful, fun]
+requires:
+  nerd_font: false
+  tools: [git]
+colors:
+  primary: "#ff00ff"
+  secondary: "#00ffff"
+  background: "#0a0a0a"
+segments:
+  - type: time
+    style: "38;5;226"
+    position: left
+  - type: directory
+    style: "38;5;51"
+    position: left
+  - type: git_branch
+    style: "38;5;201"
+    position: left
+  - type: exit_code
+    style: "38;5;196"
+    position: left
+  - type: character
+    style: "38;5;201"
+    position: left
+prompt:
+  code: |
+    _neon_git_branch() {
+      local branch
+      branch=$(git symbolic-ref --short HEAD 2>/dev/null) || return
+      printf ' \[\e[38;5;201m\](%s)\[\e[0m\]' "$branch"
+    }
+
+    _neon_exit_code() {
+      local code=$?
+      if [ $code -ne 0 ]; then
+        printf ' \[\e[38;5;196m\][%s]\[\e[0m\]' "$code"
+      fi
+    }
+
+    PROMPT_COMMAND='_NEON_EXIT=$?'
+
+    PS1='\[\e[38;5;226m\][\t]\[\e[0m\] \[\e[38;5;51m\]\w\[\e[0m\]$(_neon_git_branch)$([ $_NEON_EXIT -ne 0 ] && printf " \[\e[38;5;196m\][%s]\[\e[0m\]" "$_NEON_EXIT") \[\e[38;5;201m\]▸\[\e[0m\] '
+  install_instructions: "Best with dark terminal background. Add to ~/.bashrc"

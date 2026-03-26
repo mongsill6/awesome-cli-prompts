@@ -1,0 +1,31 @@
+name: Retro Green
+id: retro-green
+shell: bash
+author: mongsill6
+version: 1.0.0
+description: Classic green-on-black retro terminal aesthetic
+tags: [retro, green, classic, nostalgia]
+requires:
+  nerd_font: false
+  tools: []
+colors:
+  primary: "#00ff00"
+  secondary: "#008800"
+  background: "#000000"
+segments:
+  - type: user
+    style: "32;1"
+    position: left
+  - type: host
+    style: "32"
+    position: left
+  - type: directory
+    style: "32;1"
+    position: left
+  - type: character
+    style: "32"
+    position: left
+prompt:
+  code: |
+    PS1='\[\e[1;32m\]\u\[\e[0;32m\]@\[\e[0;32m\]\h\[\e[0m\]:\[\e[1;32m\]\w\[\e[0;32m\]$\[\e[0m\] '
+  install_instructions: "Best with black background terminal. Add to ~/.bashrc"

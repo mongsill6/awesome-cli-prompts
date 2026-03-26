@@ -1,0 +1,116 @@
+name: Powerline No-Plugin
+id: powerline-noplug
+shell: bash
+author: mongsill6
+description: Powerline-style prompt without any plugins, pure bash
+version: 1.0.0
+tags: [powerline, no-plugin, colorful]
+requires:
+  nerd_font: true
+  tools: [git]
+colors:
+  primary: "#1e90ff"
+  secondary: "#ff8c00"
+  background: dark
+segments:
+  - type: user
+    style: "bg=17;fg=white"
+    position: left
+  - type: host
+    style: "bg=18;fg=white"
+    position: left
+  - type: directory
+    style: "bg=26;fg=white"
+    position: left
+  - type: git_branch
+    style: "bg=22;fg=white"
+    position: left
+  - type: git_status
+    style: "bg=130;fg=white"
+    position: left
+  - type: exit_code
+    style: "bg=196;fg=white"
+    position: left
+prompt:
+  code: |
+    __powerline_prompt() {
+      local EXIT_CODE=$?
+
+      # Colors
+      local RESET='\[\e[0m\]'
+
+      # Background / Foreground pairs  (bg_color fg_color separator_fg)
+      local SEG_USER_BG='\[\e[48;5;17m\]'
+      local SEG_USER_FG='\[\e[38;5;255m\]'
+
+      local SEG_HOST_BG='\[\e[48;5;18m\]'
+      local SEG_HOST_FG='\[\e[38;5;255m\]'
+      local SEG_HOST_ARROW_FG='\[\e[38;5;17m\]'   # prev bg as fg for arrow
+
+      local SEG_DIR_BG='\[\e[48;5;26m\]'
+      local SEG_DIR_FG='\[\e[38;5;255m\]'
+      local SEG_DIR_ARROW_FG='\[\e[38;5;18m\]'
+
+      local SEG_GIT_BG='\[\e[48;5;22m\]'
+      local SEG_GIT_FG='\[\e[38;5;255m\]'
+      local SEG_GIT_ARROW_FG='\[\e[38;5;26m\]'
+
+      local SEG_DIRTY_BG='\[\e[48;5;130m\]'
+      local SEG_DIRTY_FG='\[\e[38;5;255m\]'
+      local SEG_DIRTY_ARROW_FG='\[\e[38;5;22m\]'
+
+      local SEG_ERR_BG='\[\e[48;5;196m\]'
+      local SEG_ERR_FG='\[\e[38;5;255m\]'
+      local SEG_ERR_ARROW_FG='\[\e[38;5;196m\]'
+
+      local ARROW=$'\ue0b0'       # filled powerline arrow
+      local ARROW_THIN=$'\ue0b1'  # thin powerline arrow
+
+      # --- Git info ---
+      local GIT_BRANCH=""
+      local GIT_DIRTY=0
+      if git rev-parse --is-inside-work-tree &>/dev/null; then
+        GIT_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+        if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
+          GIT_DIRTY=1
+        fi
+      fi
+
+      # --- Build PS1 ---
+      local PS1_NEW=""
+
+      # Segment: user
+      PS1_NEW+="${SEG_USER_BG}${SEG_USER_FG} \u "
+
+      # Segment: host (arrow transition from user bg)
+      PS1_NEW+="${SEG_HOST_BG}${SEG_HOST_ARROW_FG}${ARROW}${SEG_HOST_FG} \h "
+
+      # Segment: directory (arrow transition from host bg)
+      PS1_NEW+="${SEG_DIR_BG}${SEG_DIR_ARROW_FG}${ARROW}${SEG_DIR_FG} \W "
+
+      # Segment: git branch / status
+      if [[ -n "$GIT_BRANCH" ]]; then
+        if [[ $GIT_DIRTY -eq 1 ]]; then
+          PS1_NEW+="${SEG_DIRTY_BG}${SEG_DIR_ARROW_FG}${ARROW}${SEG_DIRTY_FG} \ue0a0 ${GIT_BRANCH} \u00b1 "
+          # Closing arrow with no background
+          PS1_NEW+="${RESET}\[\e[38;5;130m\]${ARROW}${RESET}"
+        else
+          PS1_NEW+="${SEG_GIT_BG}${SEG_DIR_ARROW_FG}${ARROW}${SEG_GIT_FG} \ue0a0 ${GIT_BRANCH} "
+          PS1_NEW+="${RESET}\[\e[38;5;22m\]${ARROW}${RESET}"
+        fi
+      else
+        PS1_NEW+="${RESET}\[\e[38;5;26m\]${ARROW}${RESET}"
+      fi
+
+      # Exit code indicator (only on error)
+      if [[ $EXIT_CODE -ne 0 ]]; then
+        PS1_NEW+=" \[\e[38;5;196m\]\u2718 ${EXIT_CODE}${RESET}"
+      fi
+
+      PS1_NEW+=" "
+
+      PS1="$PS1_NEW"
+    }
+
+    PROMPT_COMMAND='__powerline_prompt'
+  install_instructions: "Requires a Nerd Font. Add to ~/.bashrc"

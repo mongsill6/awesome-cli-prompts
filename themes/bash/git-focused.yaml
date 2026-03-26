@@ -1,0 +1,152 @@
+name: Git Focused
+id: git-focused
+shell: bash
+author: mongsill6
+description: Developer prompt with detailed git information
+version: 1.0.0
+tags: [git, developer, informative]
+requires:
+  nerd_font: false
+  tools: [git]
+colors:
+  primary: "#00d700"
+  secondary: "#ff5f00"
+  background: dark
+segments:
+  - type: directory
+    style: "38;5;40"
+    position: left
+  - type: git_branch
+    style: "38;5;214"
+    position: left
+  - type: git_status
+    style: "38;5;196"
+    position: left
+  - type: exit_code
+    style: "38;5;196"
+    position: left
+prompt:
+  code: |
+    __git_focused_prompt() {
+      local EXIT_CODE=$?
+
+      local RESET='\[\e[0m\]'
+
+      # Color shortcuts
+      local C_DIR='\[\e[38;5;40m\]'          # green — directory
+      local C_BRANCH='\[\e[38;5;214m\]'       # orange — branch name
+      local C_CLEAN='\[\e[38;5;40m\]'         # green — clean state
+      local C_DIRTY='\[\e[38;5;226m\]'        # yellow — dirty state
+      local C_CONFLICT='\[\e[38;5;196m\]'     # red — conflicts
+      local C_STAGED='\[\e[38;5;82m\]'        # bright green — staged
+      local C_UNSTAGED='\[\e[38;5;208m\]'     # orange — unstaged
+      local C_UNTRACKED='\[\e[38;5;244m\]'    # grey — untracked
+      local C_STASH='\[\e[38;5;45m\]'         # cyan — stash
+      local C_AHEAD='\[\e[38;5;46m\]'         # bright green — ahead
+      local C_BEHIND='\[\e[38;5;196m\]'       # red — behind
+      local C_ERROR='\[\e[38;5;196m\]'        # red — exit code
+      local C_DIM='\[\e[38;5;244m\]'          # grey — separators
+
+      # --- Directory ---
+      local DIR_PART="${C_DIR}\W${RESET}"
+
+      # --- Git info ---
+      local GIT_PART=""
+      if git rev-parse --is-inside-work-tree &>/dev/null; then
+
+        # Branch or detached HEAD
+        local BRANCH
+        BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null)
+        if [[ -z "$BRANCH" ]]; then
+          BRANCH="($(git rev-parse --short HEAD 2>/dev/null))"
+        fi
+
+        # Ahead / behind remote
+        local AHEAD=0 BEHIND=0
+        local REMOTE
+        REMOTE=$(git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>/dev/null)
+        if [[ -n "$REMOTE" ]]; then
+          read -r AHEAD BEHIND < <(git rev-list --left-right --count HEAD..."$REMOTE" 2>/dev/null || echo "0 0")
+        fi
+
+        # Staged, unstaged, untracked, conflict counts
+        local STAGED=0 UNSTAGED=0 UNTRACKED=0 CONFLICT=0
+        while IFS= read -r line; do
+          local X="${line:0:1}" Y="${line:1:1}"
+          if [[ "$X" == "U" || "$Y" == "U" || ("$X" == "A" && "$Y" == "A") || ("$X" == "D" && "$Y" == "D") ]]; then
+            (( CONFLICT++ ))
+          elif [[ "$X" != " " && "$X" != "?" && "$X" != "!" ]]; then
+            (( STAGED++ ))
+          fi
+          if [[ "$Y" == "M" || "$Y" == "D" ]]; then
+            (( UNSTAGED++ ))
+          fi
+          if [[ "$X" == "?" ]]; then
+            (( UNTRACKED++ ))
+          fi
+        done < <(git status --porcelain 2>/dev/null)
+
+        # Stash count
+        local STASH=0
+        STASH=$(git stash list 2>/dev/null | wc -l)
+        STASH="${STASH// /}"
+
+        # Branch icon (text fallback if no nerd font)
+        local BRANCH_ICON="branch:"
+
+        # Choose branch color based on state
+        local BRANCH_COLOR
+        if [[ $CONFLICT -gt 0 ]]; then
+          BRANCH_COLOR="$C_CONFLICT"
+        elif [[ $UNSTAGED -gt 0 || $STAGED -gt 0 ]]; then
+          BRANCH_COLOR="$C_DIRTY"
+        else
+          BRANCH_COLOR="$C_CLEAN"
+        fi
+
+        GIT_PART=" ${C_DIM}[${RESET}${BRANCH_COLOR}${BRANCH_ICON}${BRANCH}${RESET}"
+
+        # Ahead / behind
+        if [[ $AHEAD -gt 0 ]]; then
+          GIT_PART+=" ${C_AHEAD}+${AHEAD}\u2191${RESET}"
+        fi
+        if [[ $BEHIND -gt 0 ]]; then
+          GIT_PART+=" ${C_BEHIND}-${BEHIND}\u2193${RESET}"
+        fi
+
+        # Staged
+        if [[ $STAGED -gt 0 ]]; then
+          GIT_PART+=" ${C_STAGED}\u2022${STAGED}s${RESET}"
+        fi
+        # Unstaged
+        if [[ $UNSTAGED -gt 0 ]]; then
+          GIT_PART+=" ${C_UNSTAGED}\u2022${UNSTAGED}u${RESET}"
+        fi
+        # Conflicts
+        if [[ $CONFLICT -gt 0 ]]; then
+          GIT_PART+=" ${C_CONFLICT}\u2716${CONFLICT}!${RESET}"
+        fi
+        # Untracked
+        if [[ $UNTRACKED -gt 0 ]]; then
+          GIT_PART+=" ${C_UNTRACKED}?${UNTRACKED}${RESET}"
+        fi
+        # Stash
+        if [[ $STASH -gt 0 ]]; then
+          GIT_PART+=" ${C_STASH}\u2691${STASH}${RESET}"
+        fi
+
+        GIT_PART+="${C_DIM}]${RESET}"
+      fi
+
+      # --- Exit code ---
+      local EXIT_PART=""
+      if [[ $EXIT_CODE -ne 0 ]]; then
+        EXIT_PART=" ${C_ERROR}\u2718${EXIT_CODE}${RESET}"
+      fi
+
+      # --- Final PS1 ---
+      PS1="${DIR_PART}${GIT_PART}${EXIT_PART} ${C_DIR}\$${RESET} "
+    }
+
+    PROMPT_COMMAND='__git_focused_prompt'
+  install_instructions: "Requires git. Add to ~/.bashrc"

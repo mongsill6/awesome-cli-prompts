@@ -1,0 +1,80 @@
+name: Hacker Matrix
+id: hacker-matrix
+shell: bash
+author: mongsill6
+version: 1.0.0
+description: Matrix-inspired green-on-black hacker aesthetic with system info
+tags: [hacker, matrix, green, cybersecurity]
+requires:
+  nerd_font: false
+  tools: [git]
+colors:
+  primary: "#00ff41"
+  secondary: "#008f11"
+  background: "#000000"
+segments:
+  - type: user
+    style: "38;5;82"
+    position: left
+  - type: host
+    style: "38;5;82"
+    position: left
+  - type: directory
+    style: "38;5;40"
+    position: left
+  - type: git_branch
+    style: "38;5;82"
+    position: left
+  - type: exit_code
+    style: "38;5;196"
+    position: left
+  - type: character
+    style: "38;5;82"
+    position: left
+prompt:
+  code: |
+    __matrix_git_branch() {
+      local branch
+      branch=$(git symbolic-ref --short HEAD 2>/dev/null) || \
+      branch=$(git rev-parse --short HEAD 2>/dev/null) || \
+      return
+      printf '[%s]' "$branch"
+    }
+
+    __matrix_exit_code() {
+      local code=$1
+      if [ "$code" -ne 0 ]; then
+        printf '\[\e[38;5;196m\][!%s]\[\e[0m\]' "$code"
+      fi
+    }
+
+    __matrix_prompt() {
+      local exit_code=$?
+      local user_color='\[\e[38;5;82m\]'
+      local dim_green='\[\e[38;5;40m\]'
+      local bright_green='\[\e[38;5;82m\]'
+      local reset='\[\e[0m\]'
+
+      local git_part
+      git_part=$(__matrix_git_branch)
+
+      local exit_part
+      exit_part=$(__matrix_exit_code "$exit_code")
+
+      local prompt_char='>'
+      if [ "$(id -u)" -eq 0 ]; then
+        prompt_char='#'
+      fi
+
+      PS1="${user_color}\u@\h${reset} ${dim_green}\w${reset}"
+      if [ -n "$git_part" ]; then
+        PS1="${PS1} ${bright_green}${git_part}${reset}"
+      fi
+      if [ -n "$exit_part" ]; then
+        PS1="${PS1} ${exit_part}"
+      fi
+      PS1="${PS1}\n${bright_green}${prompt_char}${reset} "
+    }
+
+    PROMPT_COMMAND='__matrix_prompt'
+  install_instructions: "Best with black background terminal. Add to ~/.bashrc"

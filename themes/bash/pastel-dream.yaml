@@ -1,0 +1,40 @@
+name: Pastel Dream
+id: pastel-dream
+shell: bash
+author: mongsill6
+version: 1.0.0
+description: Soft pastel colors for a gentle, easy-on-the-eyes prompt
+tags: [pastel, soft, gentle, aesthetic]
+requires:
+  nerd_font: false
+  tools: [git]
+colors:
+  primary: "#f5b7c5"
+  secondary: "#b5d8f7"
+  background: light
+segments:
+  - type: time
+    style: "38;5;218"
+    position: left
+  - type: directory
+    style: "38;5;183"
+    position: left
+  - type: git_branch
+    style: "38;5;158"
+    position: left
+  - type: character
+    value: "◦"
+    style: "38;5;218"
+    position: left
+prompt:
+  code: |
+    __pastel_git_branch() {
+      local branch
+      branch=$(git symbolic-ref --short HEAD 2>/dev/null) || return
+      printf ' \001\e[38;5;158m\002(%s)\001\e[0m\002' "$branch"
+    }
+
+    PROMPT_COMMAND='__pastel_ps1_time=$(date +%H:%M)'
+
+    PS1='\[\e[38;5;218m\]${__pastel_ps1_time}\[\e[0m\] \[\e[38;5;183m\]\W\[\e[0m\]$(__pastel_git_branch) \[\e[38;5;218m\]◦\[\e[0m\] '
+  install_instructions: "Works best with light terminal background. Add to ~/.bashrc"

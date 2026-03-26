@@ -1,0 +1,74 @@
+name: Rainbow Pride
+id: rainbow-pride
+shell: bash
+author: mongsill6
+version: 1.0.0
+description: Colorful rainbow prompt celebrating diversity
+tags: [rainbow, pride, colorful, fun, inclusive]
+requires:
+  nerd_font: false
+  tools: []
+colors:
+  primary: "#ff0000"
+  secondary: "#ff8800"
+  background: any
+segments:
+  - type: directory
+    style: "rainbow"
+    position: left
+  - type: character
+    style: "rainbow-cycle"
+    position: left
+prompt:
+  code: |
+    __rainbow_colorize_path() {
+      local path="$1"
+      local colors=(196 208 226 46 21 93)
+      local num_colors=${#colors[@]}
+      local result=""
+      local i=0
+      local char
+
+      while IFS= read -r -n1 char; do
+        if [ "$char" = "/" ]; then
+          result="${result}\[\e[38;5;255m\]/${reset}"
+        elif [ -n "$char" ]; then
+          local color_index=$(( i % num_colors ))
+          result="${result}\[\e[38;5;${colors[$color_index]}m\]${char}"
+          (( i++ )) || true
+        fi
+      done <<< "$path"
+
+      printf '%s' "$result"
+    }
+
+    __rainbow_prompt() {
+      local reset='\[\e[0m\]'
+      local colors=(196 208 226 46 21 93)
+      local num_colors=${#colors[@]}
+
+      local char_color_index=$(( RANDOM % num_colors ))
+      local prompt_char_color='\[\e[38;5;'"${colors[$char_color_index]}"'m\]'
+
+      local short_path
+      short_path=$(dirs +0)
+      short_path="${short_path/#$HOME/~}"
+
+      local rainbow_path=""
+      local i=0
+      local char
+      while IFS= read -r -n1 char; do
+        if [ "$char" = "/" ] || [ "$char" = "~" ]; then
+          rainbow_path="${rainbow_path}\[\e[38;5;255m\]${char}"
+        elif [ -n "$char" ]; then
+          local cidx=$(( i % num_colors ))
+          rainbow_path="${rainbow_path}\[\e[38;5;${colors[$cidx]}m\]${char}"
+          (( i++ )) || true
+        fi
+      done <<< "$short_path"
+
+      PS1="${rainbow_path}${reset} ${prompt_char_color}❯${reset} "
+    }
+
+    PROMPT_COMMAND='__rainbow_prompt'
+  install_instructions: "Add to ~/.bashrc"

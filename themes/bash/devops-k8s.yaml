@@ -1,0 +1,105 @@
+name: DevOps K8s
+id: devops-k8s
+shell: bash
+author: mongsill6
+version: 1.0.0
+description: DevOps-oriented prompt with Kubernetes context and Docker info
+tags: [devops, kubernetes, docker, cloud]
+requires:
+  nerd_font: false
+  tools: [kubectl, docker, git]
+colors:
+  primary: "#326ce5"
+  secondary: "#2496ed"
+  background: dark
+segments:
+  - type: user
+    style: "38;5;255"
+    position: left
+  - type: directory
+    style: "38;5;39"
+    position: left
+  - type: k8s
+    style: "38;5;69"
+    position: left
+  - type: docker
+    style: "38;5;38"
+    position: left
+  - type: git_branch
+    style: "38;5;214"
+    position: left
+  - type: exit_code
+    style: "38;5;196"
+    position: left
+prompt:
+  code: |
+    __devops_k8s_prompt() {
+      local EXIT_CODE=$?
+      local RESET='\[\e[0m\]'
+
+      # Colors
+      local C_USER='\[\e[38;5;255m\]'
+      local C_AT='\[\e[38;5;243m\]'
+      local C_DIR='\[\e[38;5;39m\]'
+      local C_K8S='\[\e[38;5;69m\]'
+      local C_DOCKER='\[\e[38;5;38m\]'
+      local C_GIT='\[\e[38;5;214m\]'
+      local C_OK='\[\e[38;5;82m\]'
+      local C_ERR='\[\e[38;5;196m\]'
+      local C_DIM='\[\e[38;5;243m\]'
+
+      local PS=""
+
+      # User and host
+      PS+="${C_USER}\u${C_AT}@\h${RESET} "
+
+      # Directory (short path, max 3 components)
+      PS+="${C_DIR}\W${RESET}"
+
+      # Kubernetes context/namespace
+      if command -v kubectl &>/dev/null; then
+        local K8S_CTX
+        K8S_CTX=$(kubectl config current-context 2>/dev/null)
+        if [ -n "$K8S_CTX" ]; then
+          local K8S_NS
+          K8S_NS=$(kubectl config view --minify --output 'jsonpath={..namespace}' 2>/dev/null)
+          K8S_NS="${K8S_NS:-default}"
+          PS+=" ${C_DIM}[${RESET}${C_K8S}⎈ ${K8S_CTX}${C_DIM}:${C_K8S}${K8S_NS}${C_DIM}]${RESET}"
+        fi
+      fi
+
+      # Docker context (only if docker is available)
+      if command -v docker &>/dev/null; then
+        local DOCKER_CTX
+        DOCKER_CTX=$(docker context show 2>/dev/null)
+        if [ -n "$DOCKER_CTX" ] && [ "$DOCKER_CTX" != "default" ]; then
+          PS+=" ${C_DIM}[${RESET}${C_DOCKER}Docker: ${DOCKER_CTX}${C_DIM}]${RESET}"
+        fi
+      fi
+
+      # Git branch
+      if command -v git &>/dev/null; then
+        local GIT_BRANCH
+        GIT_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null)
+        if [ -n "$GIT_BRANCH" ]; then
+          local GIT_DIRTY=""
+          if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
+            GIT_DIRTY="*"
+          fi
+          PS+=" ${C_DIM}(${RESET}${C_GIT}${GIT_BRANCH}${GIT_DIRTY}${C_DIM})${RESET}"
+        fi
+      fi
+
+      # Exit code indicator
+      if [ "$EXIT_CODE" -ne 0 ]; then
+        PS+=" ${C_ERR}[✗ ${EXIT_CODE}]${RESET}"
+      fi
+
+      # Prompt character
+      PS+="\n${C_DIM}❯${RESET} "
+
+      PS1="$PS"
+    }
+
+    PROMPT_COMMAND=__devops_k8s_prompt
+  install_instructions: "Requires kubectl, docker, git. Add to ~/.bashrc"

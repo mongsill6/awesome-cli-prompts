@@ -1,0 +1,41 @@
+name: Theme Request
+description: Request a new prompt theme
+labels: [theme-request]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Theme Description
+      description: Describe the theme you'd like to see
+      placeholder: What kind of theme are you requesting? (e.g., dark mode, minimal, retro, neon, etc.)
+    validations:
+      required: true
+
+  - type: textarea
+    id: example-mockup
+    attributes:
+      label: Example or Mockup
+      description: Provide an example, mockup, or reference image of the theme
+      placeholder: Paste a screenshot, link, or ASCII art mockup here
+
+  - type: dropdown
+    id: target-shell
+    attributes:
+      label: Target Shell
+      description: Which shell(s) should this theme support?
+      options:
+        - bash
+        - zsh
+        - fish
+        - starship
+        - all
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Are you willing to contribute?
+      options:
+        - label: I'm willing to contribute this theme
+          required: false

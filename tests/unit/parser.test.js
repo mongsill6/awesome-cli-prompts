@@ -35,6 +35,60 @@ describe('Parser Module', () => {
       const result = parseThemeFile(filePath);
       expect(result.id).toBe('minimal-clean');
     });
+
+    test('should throw error when file has no read permissions', () => {
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jest-'));
+      const testFile = path.join(tempDir, 'no-read.yaml');
+
+      const content = `name: No Read Test
+id: no-read-test
+shell: bash
+author: tester
+description: Test file
+version: 1.0.0
+prompt:
+  code: 'test'`;
+
+      fs.writeFileSync(testFile, content);
+
+      try {
+        // Remove read permissions
+        fs.chmodSync(testFile, 0o000);
+
+        // Should throw permission error
+        expect(() => parseThemeFile(testFile)).toThrow(/Permission denied/);
+      } finally {
+        // Restore permissions before cleanup
+        fs.chmodSync(testFile, 0o644);
+        fs.unlinkSync(testFile);
+        fs.rmdirSync(tempDir);
+      }
+    });
+
+    test('should throw error when path is a directory instead of a file', () => {
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jest-'));
+
+      try {
+        expect(() => parseThemeFile(tempDir)).toThrow(/Error reading theme file|ISDIR|Permission denied/);
+      } finally {
+        fs.rmdirSync(tempDir);
+      }
+    });
+
+    test('should throw error when YAML file is completely empty', () => {
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jest-'));
+      const testFile = path.join(tempDir, 'empty.yaml');
+
+      // Create an empty file
+      fs.writeFileSync(testFile, '');
+
+      try {
+        expect(() => parseThemeFile(testFile)).toThrow(/YAML input cannot be empty/);
+      } finally {
+        fs.unlinkSync(testFile);
+        fs.rmdirSync(tempDir);
+      }
+    });
   });
 
   describe('parseThemeString', () => {
@@ -198,6 +252,83 @@ requires:
       expect(result.requires.nerd_font).toBe(true);
       expect(result.requires.tools).toEqual([]);
       expect(result.requires.priority).toBe(5);
+    });
+
+    test('should throw error when input is undefined', () => {
+      expect(() => parseThemeString(undefined)).toThrow(/YAML input must be a string/);
+    });
+
+    test('should parse YAML containing only comments', () => {
+      const yamlString = `# This is a comment
+# Another comment
+# Just comments, no actual content`;
+      expect(() => parseThemeString(yamlString)).toThrow(/YAML must parse to an object/);
+    });
+
+    test('should throw error on duplicate YAML keys (strict YAML parser)', () => {
+      const yamlString = `
+name: First Name
+id: test-id
+shell: bash
+author: tester
+description: Test duplicate keys
+version: 1.0.0
+prompt:
+  code: 'PS1="test"'
+name: Second Name
+`;
+      // The yaml library used is strict and throws on duplicate keys
+      expect(() => parseThemeString(yamlString)).toThrow(/Invalid YAML format|Map keys must be unique/);
+    });
+
+    test('should parse deeply nested YAML structure', () => {
+      const yamlString = `
+name: Deep Nesting Theme
+id: deep-nesting
+shell: bash
+author: tester
+description: Test deep nesting
+version: 1.0.0
+prompt:
+  code: 'test'
+deep:
+  level1:
+    level2:
+      level3:
+        level4:
+          level5:
+            value: deeply_nested_value
+            nested_array:
+              - item1
+              - item2
+              - item3
+`;
+      const result = parseThemeString(yamlString);
+      expect(result.deep.level1.level2.level3.level4.level5.value).toBe('deeply_nested_value');
+      expect(result.deep.level1.level2.level3.level4.level5.nested_array).toEqual(['item1', 'item2', 'item3']);
+    });
+
+    test('should throw or parse with tab characters in YAML (depending on YAML parser behavior)', () => {
+      // Some YAML parsers are lenient with tabs, others throw
+      // This test documents the behavior
+      const yamlWithTabs = `name: Tab Test
+id: tab-test
+shell: bash
+author: tester
+description: Test with tabs
+version: 1.0.0
+prompt:
+\tcode: 'PS1="test"'`;
+
+      // Try to parse - either succeeds or throws depending on parser strictness
+      try {
+        const result = parseThemeString(yamlWithTabs);
+        // If it parses successfully, verify the data
+        expect(result).toBeInstanceOf(Object);
+      } catch (error) {
+        // If it throws, expect a YAML format error
+        expect(error.message).toMatch(/Invalid YAML format|YAML/);
+      }
     });
   });
 

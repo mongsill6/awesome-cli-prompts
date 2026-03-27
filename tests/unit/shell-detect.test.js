@@ -50,6 +50,26 @@ describe('shell-detect', () => {
         process.env['0'] = original0;
       }
     });
+
+    test('extracts shell name from path with multiple segments (/usr/local/bin/zsh)', () => {
+      process.env.SHELL = '/usr/local/bin/zsh';
+      expect(detectShell()).toBe('zsh');
+    });
+
+    test('returns "fish" when SHELL is /bin/fish', () => {
+      process.env.SHELL = '/bin/fish';
+      expect(detectShell()).toBe('fish');
+    });
+
+    test('defaults to "bash" for unknown shell like /bin/ksh', () => {
+      process.env.SHELL = '/bin/ksh';
+      expect(detectShell()).toBe('bash');
+    });
+
+    test('defaults to "bash" when SHELL is an empty string', () => {
+      process.env.SHELL = '';
+      expect(detectShell()).toBe('bash');
+    });
   });
 
   describe('getRcFilePath(shell)', () => {
@@ -73,6 +93,18 @@ describe('shell-detect', () => {
 
     test('falls back to ~/.bashrc for an unknown shell name', () => {
       expect(getRcFilePath('unknown-shell')).toBe(path.join(home, '.bashrc'));
+    });
+
+    test('falls back to ~/.bashrc when shell is null', () => {
+      expect(getRcFilePath(null)).toBe(path.join(home, '.bashrc'));
+    });
+
+    test('falls back to ~/.bashrc when shell is undefined', () => {
+      expect(getRcFilePath(undefined)).toBe(path.join(home, '.bashrc'));
+    });
+
+    test('falls back to ~/.bashrc when shell is an empty string', () => {
+      expect(getRcFilePath('')).toBe(path.join(home, '.bashrc'));
     });
   });
 
@@ -122,6 +154,21 @@ describe('shell-detect', () => {
     test('rcFile is consistent with getRcFilePath(name)', () => {
       const info = getShellInfo();
       expect(info.rcFile).toBe(getRcFilePath(info.name));
+    });
+
+    test('detects zsh and returns correct info when SHELL is /usr/bin/zsh', () => {
+      process.env.SHELL = '/usr/bin/zsh';
+      const info = getShellInfo();
+
+      expect(info.name).toBe('zsh');
+      expect(info.rcFile).toBe(getRcFilePath('zsh'));
+      expect(typeof info.version).toBe('string');
+    });
+
+    test('version is always a string (even if command fails)', () => {
+      const info = getShellInfo();
+      expect(typeof info.version).toBe('string');
+      expect(info.version).toBeTruthy(); // Should be non-empty
     });
   });
 });

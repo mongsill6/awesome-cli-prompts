@@ -1,5 +1,5 @@
 name: DevOps Starship
-id: devops-starship
+id: devops
 shell: starship
 author: mongsill6
 version: 1.0.0

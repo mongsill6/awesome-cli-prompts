@@ -1,5 +1,5 @@
 name: Minimal Starship
-id: minimal-starship
+id: minimal
 shell: starship
 author: mongsill6
 version: 1.0.0

@@ -41,6 +41,32 @@ program
     uninstall();
   });
 
+program
+  .command('search <query>')
+  .description('Fuzzy search themes by name, tags, or description')
+  .option('--shell <shell>', 'Filter by shell type (bash/zsh/fish/starship)')
+  .option('--limit <n>', 'Limit results', '10')
+  .action((query, options) => {
+    const search = require('./commands/search');
+    search(query, options);
+  });
+
+program
+  .command('info <theme-id>')
+  .description('Show detailed information about a theme')
+  .action((themeId) => {
+    const info = require('./commands/info');
+    info(themeId);
+  });
+
+program
+  .command('interactive')
+  .description('Interactive theme browser')
+  .action(async () => {
+    const interactive = require('./commands/interactive');
+    await interactive();
+  });
+
 if (!process.argv.slice(2).length) {
   program.outputHelp();
 }

@@ -1,0 +1,59 @@
+# Data Science Starship Configuration
+# Optimized for Python, Conda/virtualenv environments, and Jupyter workflows
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$python\
+$conda\
+$nodejs\
+$line_break\
+$character"""
+
+# Directory module
+[directory]
+truncation_length = 2
+truncate_to_repo = true
+style = "bold #4caf50"
+read_only = " 🔒"
+format = "[$read_only$path]($style) "
+
+# Git branch
+[git_branch]
+symbol = "🌿 "
+style = "bold #ff9800"
+format = "[$symbol$branch]($style) "
+
+# Git status
+[git_status]
+style = "bold #f44336"
+format = "([\\[$all_status$ahead_behind\\]]($style) )"
+
+# Python module
+[python]
+symbol = "🐍 "
+style = "bold #3776ab"
+format = "[${symbol}${pyenv_prefix}(${version} )(\\($virtualenv\\) )]($style)"
+detect_extensions = ["py"]
+detect_files = [".python-version", "Pipfile", "__pycache__", "*.egg-info", ".pytest_cache"]
+detect_folders = []
+
+# Conda environment (custom display)
+[conda]
+symbol = "🅒 "
+style = "bold #4caf50"
+format = "[$symbol$environment]($style) "
+ignore_base = true
+
+# Node.js module
+[nodejs]
+symbol = "⬢ "
+style = "bold #68a063"
+format = "[$symbol($version )]($style)"
+disabled = true
+
+# Character module
+[character]
+success_symbol = "[λ](bold #4caf50)"
+error_symbol = "[λ](bold #f44336)"

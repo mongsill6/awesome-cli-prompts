@@ -1,0 +1,38 @@
+id: data-science-starship
+name: Data Science Starship
+shell: starship
+author: mongsill6
+version: 1.0.0
+description: Data science workflow Starship preset with Python and env support
+tags:
+  - data-science
+  - python
+  - minimal
+nerd_font: false
+tools:
+  - starship
+  - git
+  - python
+segments:
+  - directory
+  - git_branch
+  - git_status
+  - python
+  - virtualenv
+  - conda
+  - nodejs
+colors:
+  primary: "#4caf50"
+  secondary: "#ff9800"
+  error: "#f44336"
+  background: dark
+prompt:
+  code: "# Copy data-science.toml to ~/.config/starship.toml"
+install_instructions: "Copy data-science.toml to ~/.config/starship.toml and restart your shell"
+features:
+  - Python version detection with 🐍 icon
+  - Conda/virtualenv environment detection
+  - Git branch and status display
+  - Jupyter-friendly minimal design
+  - Directory truncation to 2 levels
+  - Clean, non-intrusive prompt

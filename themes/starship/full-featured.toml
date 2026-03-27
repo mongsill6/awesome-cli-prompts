@@ -1,0 +1,144 @@
+# Full Featured Starship Configuration
+# Comprehensive preset with all major modules enabled
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$git_metrics\
+$nodejs\
+$python\
+$rust\
+$golang\
+$docker_context\
+$kubernetes\
+$aws\
+$time\
+$line_break\
+$character"""
+
+# Username Module
+[username]
+show_always = true
+format = "[$user]($style) "
+style_user = "bold #bd93f9"
+style_root = "bold #ff5555"
+
+# Hostname Module
+[hostname]
+ssh_only = false
+format = "[@$hostname]($style) "
+style = "bold #50fa7b"
+
+# Directory Module
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+format = "[$path]($style)[$read_only]($read_only_style) "
+style = "#8be9fd"
+read_only = " 🔒"
+read_only_style = "#ff5555"
+
+# Git Branch
+[git_branch]
+format = "[on $symbol$branch]($style) "
+symbol = " "
+style = "bold #ff79c6"
+
+# Git Status
+[git_status]
+format = "([\\[$all_status$ahead_behind\\]]($style) )"
+style = "bold #ff79c6"
+conflicted = "🏳"
+up_to_date = "✓"
+untracked = "🤷"
+stashed = "📦"
+modified = "📝"
+staged = "[++\\($count\\)](#50fa7b)"
+renamed = "👅"
+deleted = "🗑"
+
+# Git Metrics
+[git_metrics]
+disabled = false
+format = "([+$added]($added_style) )([-$deleted]($deleted_style) )"
+added_style = "bold #50fa7b"
+deleted_style = "bold #ff5555"
+only_nonzero_numbers = true
+
+# Node.js Module
+[nodejs]
+symbol = " "
+format = "[$symbol($version)]($style) "
+style = "bold #f0db4f"
+detect_extensions = ["js", "mjs", "cjs", "ts", "mts", "cts"]
+detect_files = ["package.json", ".node-version"]
+
+# Python Module
+[python]
+symbol = "🐍 "
+format = "[$symbol($version)]($style) "
+style = "bold #3776ab"
+detect_extensions = ["py"]
+detect_files = [".python-version", "Pipfile", "__pycache__", "pyproject.toml", "requirements.txt", "setup.py", "tox.ini"]
+
+# Rust Module
+[rust]
+symbol = "🦀 "
+format = "[$symbol($version)]($style) "
+style = "bold #ce422b"
+detect_extensions = ["rs"]
+detect_files = ["Cargo.toml", "Cargo.lock"]
+
+# Go Module
+[golang]
+symbol = "🐹 "
+format = "[$symbol($version)]($style) "
+style = "bold #00add8"
+detect_extensions = ["go"]
+detect_files = ["go.mod", "go.sum", "go.work", "glide.yaml", "Gopkg.yml", "Gopkg.lock"]
+
+# Docker Context Module
+[docker_context]
+symbol = "🐳 "
+format = "[$symbol($context)]($style) "
+style = "bold #2496ed"
+detect_extensions = []
+detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile"]
+detect_folders = []
+
+# Kubernetes Module
+[kubernetes]
+symbol = "☸ "
+format = "[$symbol($context)( \\($namespace\\))]($style) "
+style = "bold #326ce5"
+disabled = false
+detect_extensions = []
+detect_files = []
+detect_folders = []
+
+# AWS Module
+[aws]
+symbol = "☁️  "
+format = "[$symbol($profile)( \\($region\\))( \\[$duration\\])]($style) "
+style = "bold #ff9900"
+disabled = false
+
+# Time Module
+[time]
+disabled = false
+time_format = "%H:%M:%S"
+style = "bold #f8f8f2"
+format = "[$time]($style) "
+
+# Character Module
+[character]
+success_symbol = "[❯](bold #50fa7b)"
+error_symbol = "[❯](bold #ff5555)"
+vimcmd_symbol = "[❮](bold #bd93f9)"
+
+# Line Break
+[line_break]
+disabled = false

@@ -1,0 +1,35 @@
+name: Minimal Fish
+id: minimal-fish
+shell: fish
+author: mongsill6
+description: Clean minimal prompt for Fish shell
+version: 1.0.0
+tags:
+  - minimal
+  - clean
+  - beginner-friendly
+requires:
+  nerd_font: false
+  tools: []
+colors:
+  primary: "#5fa4e6"
+  secondary: "#e6a25f"
+  background: any
+segments:
+  - type: directory
+    style: "38;5;39"
+    position: left
+  - type: prompt_symbol
+    style: "38;5;208"
+    position: right
+prompt:
+  code: |
+    function fish_prompt
+        set_color 39
+        echo -n (prompt_pwd)
+        set_color 208
+        echo -n ' ❯'
+        set_color normal
+        echo -n ' '
+    end
+  install_instructions: "Add the function to your ~/.config/fish/config.fish or save it in ~/.config/fish/functions/fish_prompt.fish"

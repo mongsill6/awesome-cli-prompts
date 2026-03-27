@@ -1,0 +1,53 @@
+name: Minimal Starship
+id: minimal-starship
+shell: starship
+author: mongsill6
+version: 1.0.0
+description: Ultra-minimal Starship preset for maximum speed and clean output
+tags:
+  - minimal
+  - clean
+  - fast
+  - performance
+nerd_font: false
+tools:
+  - starship
+segments:
+  - directory
+  - character
+colors:
+  primary: "#6c7a89"
+  secondary: "#95a5a6"
+  background: "#1a1a1a"
+features:
+  lightning_fast: true
+  all_modules_disabled: true
+  shows_only_essential: true
+
+prompt:
+  code: |
+    # Copy minimal.toml to ~/.config/starship.toml
+    # This minimal configuration disables all non-essential modules
+    # and shows only directory and character for maximum performance
+
+install_instructions: |
+  1. Copy minimal.toml to ~/.config/starship.toml
+     cp minimal.toml ~/.config/starship.toml
+
+  2. Ensure starship is installed:
+     curl -sS https://starship.rs/install.sh | sh
+
+  3. Initialize Starship in your shell:
+     # For bash (~/.bashrc or ~/.bash_profile):
+     eval "$(starship init bash)"
+
+     # For zsh (~/.zshrc):
+     eval "$(starship init zsh)"
+
+     # For fish (~/.config/fish/config.fish):
+     starship init fish | source
+
+  4. Restart your shell or run:
+     source ~/.bashrc  # or appropriate shell config file
+
+  5. (Optional) Customize colors by editing ~/.config/starship.toml further

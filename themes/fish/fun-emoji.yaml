@@ -1,0 +1,73 @@
+name: Fun Emoji
+id: fun-emoji
+shell: fish
+author: mongsill6
+description: Playful emoji-decorated prompt for Fish shell
+version: 1.0.0
+tags:
+  - fun
+  - emoji
+  - creative
+
+requires:
+  nerd_font: false
+  tools:
+    - git
+
+colors:
+  primary: "#f0c674"
+  secondary: "#81a2be"
+  background: any
+
+segments:
+  - type: directory
+    enabled: true
+  - type: git_branch
+    enabled: true
+  - type: exit_code
+    enabled: true
+
+prompt:
+  code: |
+    function fish_prompt
+        set -l last_status $status
+        set -l pwd_display (prompt_pwd)
+
+        # Main prompt line with emojis
+        echo -n (set_color f0c674)"🐟 "(set_color normal)
+
+        # Directory with folder emoji
+        echo -n (set_color f0c674)"📁 $pwd_display"(set_color normal)
+
+        # Git branch with branch emoji
+        if git rev-parse --git-dir > /dev/null 2>&1
+            set -l git_branch (git rev-parse --abbrev-ref HEAD 2>/dev/null)
+            set -l git_status (git status --short 2>/dev/null)
+
+            echo -n (set_color 81a2be)" 🌿 $git_branch"(set_color normal)
+
+            # Git status indicator
+            if test -n "$git_status"
+                echo -n (set_color f0c674)" ⚡"(set_color normal)
+            end
+        end
+
+        # Exit code with emoji indicator
+        echo -n " "
+        if test $last_status -eq 0
+            echo -n (set_color 81a2be)"✅ "(set_color normal)
+        else
+            echo -n (set_color ff6b6b)"❌ "(set_color normal)
+        end
+
+        # Input prompt with fish emoji
+        echo -n (set_color f0c674)">"(set_color normal)
+        echo -n " "
+    end
+
+  install_instructions: |
+    1. Copy the fun-emoji.yaml file to your Fish themes directory
+    2. Add the prompt function to your Fish configuration (~/.config/fish/config.fish)
+    3. Restart Fish or run: source ~/.config/fish/config.fish
+    4. Enjoy your playful emoji-decorated prompt with 🐟 fish vibes!
+    5. The prompt shows: 🐟 directory 🌿 git-branch ✅/❌ status

@@ -1,0 +1,99 @@
+name: Informative Fish
+id: informative-fish
+shell: fish
+author: mongsill6
+description: Information-rich prompt showing system details for Fish
+version: 1.0.0
+tags:
+  - informative
+  - git
+  - time
+  - detailed
+
+requires:
+  nerd_font: false
+  tools:
+    - git
+
+colors:
+  primary: "#61afef"
+  secondary: "#c678dd"
+  background: dark
+
+segments:
+  - type: user
+    enabled: true
+  - type: host
+    enabled: true
+  - type: directory
+    enabled: true
+  - type: git_branch
+    enabled: true
+  - type: git_status
+    enabled: true
+  - type: time
+    enabled: true
+  - type: exit_code
+    enabled: true
+
+prompt:
+  code: |
+    function fish_prompt
+        set -l last_status $status
+        set -l last_jobs (jobs -p | wc -l)
+
+        # Line 1: Information
+        echo -n (set_color 61afef)"╭─ "(set_color normal)
+        echo -n (set_color 61afef)(whoami)(set_color normal)
+        echo -n (set_color c678dd)"@"(set_color normal)
+        echo -n (set_color 61afef)(hostname)(set_color normal)
+        echo -n (set_color c678dd)" in "(set_color normal)
+        echo -n (set_color 61afef)(prompt_pwd)(set_color normal)
+
+        # Git branch and status if in git repo
+        if git rev-parse --git-dir > /dev/null 2>&1
+            set -l git_branch (git rev-parse --abbrev-ref HEAD 2>/dev/null)
+            set -l git_status (git status --short 2>/dev/null)
+            echo -n (set_color c678dd)" on "(set_color normal)
+            echo -n (set_color 61afef)"$git_branch"(set_color normal)
+
+            if test -n "$git_status"
+                echo -n (set_color c678dd)" ✎"(set_color normal)
+            end
+        end
+
+        # Time
+        echo -n (set_color c678dd)" at "(set_color normal)
+        echo -n (set_color 61afef)(date '+%H:%M:%S')(set_color normal)
+
+        # Exit code if error
+        if test $last_status -ne 0
+            echo -n (set_color c678dd)" ["(set_color normal)
+            echo -n (set_color ff6b6b)"$last_status"(set_color normal)
+            echo -n (set_color c678dd)"]"(set_color normal)
+        end
+
+        # Jobs indicator
+        if test $last_jobs -gt 0
+            echo -n (set_color c678dd)" ("(set_color normal)
+            echo -n (set_color 61afef)"$last_jobs job"(test $last_jobs -eq 1; or echo "s")(set_color normal)
+            echo -n (set_color c678dd)")"(set_color normal)
+        end
+
+        echo ""
+
+        # Line 2: Input prompt
+        echo -n (set_color c678dd)"╰─ "(set_color normal)
+        if test $last_status -ne 0
+            echo -n (set_color ff6b6b)"❯"(set_color normal)
+        else
+            echo -n (set_color 81a2be)"❯"(set_color normal)
+        end
+        echo -n " "
+    end
+
+  install_instructions: |
+    1. Copy the informative-fish.yaml file to your Fish themes directory
+    2. Add the prompt function to your Fish configuration (~/.config/fish/config.fish)
+    3. Restart Fish or run: source ~/.config/fish/config.fish
+    4. The prompt will automatically display user, host, directory, git info, and time

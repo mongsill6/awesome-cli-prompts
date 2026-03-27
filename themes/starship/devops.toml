@@ -1,0 +1,103 @@
+# DevOps Focused Starship Configuration
+# Optimized for cloud engineers and DevOps professionals
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$docker_context\
+$kubernetes\
+$terraform\
+$aws\
+$gcloud\
+$line_break\
+$character"""
+
+# Directory Module
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+format = "[$path]($style)[$read_only]($read_only_style) "
+style = "bold #4fc3f7"
+read_only = " 🔒"
+read_only_style = "#ef5350"
+
+# Git Branch
+[git_branch]
+format = "[on $symbol$branch]($style) "
+symbol = " "
+style = "bold #66bb6a"
+
+# Git Status
+[git_status]
+format = "([\\[$all_status$ahead_behind\\]]($style) )"
+style = "bold #66bb6a"
+conflicted = "🏳"
+up_to_date = "✓"
+untracked = "🤷"
+stashed = "📦"
+modified = "📝"
+staged = "[++\\($count\\)](#66bb6a)"
+renamed = "👅"
+deleted = "🗑"
+
+# Docker Context Module
+[docker_context]
+symbol = "🐳 "
+format = "[$symbol($context)]($style) "
+style = "bold #2496ed"
+detect_extensions = []
+detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile"]
+detect_folders = []
+
+# Kubernetes Module
+[kubernetes]
+symbol = "☸ "
+format = "[$symbol($context)( \\($namespace\\))]($style) "
+style = "bold #326ce5"
+disabled = false
+detect_extensions = []
+detect_files = ["kubeconfig"]
+detect_folders = []
+
+# Terraform Module
+[terraform]
+symbol = "💠 "
+format = "[$symbol($workspace)]($style) "
+style = "bold #6f42c1"
+disabled = false
+detect_extensions = ["tf", "tfplan", "tfstate"]
+detect_files = ["terraform.lock.hcl"]
+detect_folders = [".terraform"]
+
+# AWS Module
+[aws]
+symbol = "☁️  "
+format = "[$symbol($profile)( \\($region\\))]($style) "
+style = "bold #ff9900"
+disabled = false
+force_display = false
+
+# Google Cloud Module
+[gcloud]
+symbol = "🌐 "
+format = "[$symbol($project)( \\($region\\))]($style) "
+style = "bold #4285f4"
+disabled = false
+
+# Character Module
+[character]
+success_symbol = "[❯](bold #66bb6a)"
+error_symbol = "[❯](bold #ef5350)"
+vimcmd_symbol = "[❮](bold #4fc3f7)"
+
+# Line Break
+[line_break]
+disabled = false
+
+# Time Module (optional, commented out for cleaner prompt)
+[time]
+disabled = true
+time_format = "%H:%M:%S"
+style = "bold #f5f5f5"
+format = "[$time]($style) "

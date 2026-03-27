@@ -1,0 +1,31 @@
+id: writer-starship
+name: Writer Starship
+shell: starship
+author: mongsill6
+version: 1.0.0
+description: Distraction-free Starship preset for writers and documentation
+tags:
+  - minimal
+  - writer
+  - clean
+  - distraction-free
+nerd_font: false
+tools:
+  - starship
+segments:
+  - directory
+  - character
+colors:
+  primary: "#b0bec5"
+  secondary: "#78909c"
+  background: dark
+prompt:
+  code: "# Copy writer.toml to ~/.config/starship.toml"
+install_instructions: "Copy writer.toml to ~/.config/starship.toml and restart your shell"
+features:
+  - Ultra-minimal prompt with only directory and character
+  - All development modules disabled for zero clutter
+  - Soft, calming color palette
+  - Perfect for writing, prose, and documentation work
+  - Directory truncation to single level for maximum simplicity
+  - Lambda symbol (λ) for success, check mark (✗) for errors

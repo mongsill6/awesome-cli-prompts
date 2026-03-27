@@ -1,0 +1,72 @@
+name: Full Featured Starship
+id: full-featured-starship
+shell: starship
+author: mongsill6
+version: 1.0.0
+
+description: Comprehensive Starship preset with all major modules enabled for a feature-rich terminal experience with git integration, language support, and devops tools.
+
+tags:
+  - powerline
+  - git
+  - devops
+  - full-featured
+  - languages
+  - monitoring
+
+nerd_font: true
+
+tools:
+  - starship
+  - git
+
+segments:
+  - user
+  - host
+  - directory
+  - git_branch
+  - git_status
+  - git_metrics
+  - nodejs
+  - python
+  - rust
+  - golang
+  - docker
+  - kubernetes
+  - aws
+  - time
+
+colors:
+  primary: "#bd93f9"
+  secondary: "#50fa7b"
+  background: dark
+  accent: "#8be9fd"
+
+features:
+  - git_integration: true
+  - language_detection: true
+  - cloud_tools: true
+  - container_support: true
+  - kubernetes_support: true
+  - time_display: true
+  - multi_language: true
+
+prompt:
+  code: "# Copy full-featured.toml to ~/.config/starship.toml"
+  description: "A comprehensive Starship configuration that displays all major development and devops information in your prompt."
+
+install_instructions: |
+  1. Install Starship: https://starship.rs/guide/#🚀-installation
+  2. Copy full-featured.toml to ~/.config/starship.toml
+  3. Ensure a Nerd Font is installed and set as your terminal font
+  4. Reload your shell configuration file
+
+requirements:
+  - starship >= 1.0
+  - nerd_font: required
+  - git: recommended
+  - node, python, rust, go, docker, kubectl: optional (for respective modules)
+
+preview: |
+  user@hostname ~/projects/awesome-cli-prompts on main [+2 -1 ~0] v18.12.0 🐍 3.10.8 🦀 1.70.0 🐹 1.19 🐳 docker-context ☸ minikube (kube-system) ☁️  us-west-2 13:45:23
+  ❯

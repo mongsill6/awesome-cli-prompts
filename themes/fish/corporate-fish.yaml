@@ -1,0 +1,71 @@
+name: Corporate Fish
+id: corporate-fish
+shell: fish
+author: mongsill6
+version: 1.0.0
+description: Professional corporate prompt for Fish shell
+tags:
+  - corporate
+  - professional
+  - clean
+nerd_font: false
+tools:
+  - git
+segments:
+  - user_host
+  - directory
+  - git_branch
+  - time
+colors:
+  primary: "#6c7a89"
+  secondary: "#95a5a6"
+  background: "#1a1a1a"
+  accent: "#34495e"
+features:
+  git_branch_subtle: true
+  time_24h: true
+  conservative_symbols: true
+
+prompt:
+  code: |
+    function fish_prompt
+        set -l last_status $status
+        set -l pwd_indicator "❯"
+
+        # User and host (corporate look)
+        set_color 6c7a89
+        printf "%s@%s " $USER (hostname)
+
+        # Directory
+        set_color 95a5a6
+        printf "%s " (prompt_pwd)
+
+        # Git branch (subtle, if in repo)
+        if git rev-parse --git-dir > /dev/null 2>&1
+            set_color 34495e
+            printf "(%s) " (git rev-parse --abbrev-ref HEAD 2>/dev/null)
+        end
+
+        # Time (24h format)
+        set_color 6c7a89
+        printf "[%s] " (date +%H:%M:%S)
+
+        # Prompt character
+        if test $last_status -eq 0
+            set_color 6c7a89
+        else
+            set_color red
+        end
+        printf "%s " $pwd_indicator
+        set_color normal
+    end
+
+    function fish_right_prompt
+        # Empty right prompt for clean look
+    end
+
+install_instructions: |
+  1. Copy this theme's prompt.code function
+  2. Save to: ~/.config/fish/functions/fish_prompt.fish
+  3. Restart Fish shell or run: source ~/.config/fish/functions/fish_prompt.fish
+  4. (Optional) If git integration doesn't work, ensure git is installed and in PATH

@@ -1,0 +1,69 @@
+# Writer Starship Configuration
+# Ultra-minimal, distraction-free prompt for writers and documentation work
+
+format = """
+$directory\
+$line_break\
+$character"""
+
+# Directory module (minimal)
+[directory]
+truncation_length = 1
+truncate_to_repo = false
+style = "bold #b0bec5"
+read_only = " 🔒"
+format = "[$read_only$path]($style) "
+
+# Disable all development modules
+[git_branch]
+disabled = true
+
+[git_status]
+disabled = true
+
+[python]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[rust]
+disabled = true
+
+[golang]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[ruby]
+disabled = true
+
+[java]
+disabled = true
+
+[c]
+disabled = true
+
+[cpp]
+disabled = true
+
+[kubernetes]
+disabled = true
+
+[conda]
+disabled = true
+
+[virtualenv]
+disabled = true
+
+[nix_shell]
+disabled = true
+
+[package]
+disabled = true
+
+# Character module (distraction-free)
+[character]
+success_symbol = "[λ](bold #b0bec5)"
+error_symbol = "[✗](bold #78909c)"

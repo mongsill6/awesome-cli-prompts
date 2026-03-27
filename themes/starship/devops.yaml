@@ -1,0 +1,88 @@
+name: DevOps Starship
+id: devops-starship
+shell: starship
+author: mongsill6
+version: 1.0.0
+
+description: DevOps-focused Starship preset with cloud and container modules optimized for cloud engineers, SREs, and infrastructure teams.
+
+tags:
+  - devops
+  - kubernetes
+  - docker
+  - terraform
+  - cloud
+  - aws
+  - gcp
+  - infrastructure
+
+nerd_font: true
+
+tools:
+  - starship
+  - git
+  - kubectl
+  - docker
+  - terraform
+  - aws-cli
+  - gcloud
+
+segments:
+  - directory
+  - git_branch
+  - git_status
+  - docker_context
+  - kubernetes
+  - terraform
+  - aws
+  - gcloud
+
+colors:
+  primary: "#4fc3f7"
+  secondary: "#81c784"
+  background: dark
+  accent: "#ffb74d"
+
+features:
+  - git_integration: true
+  - docker_support: true
+  - kubernetes_support: true
+  - terraform_support: true
+  - aws_integration: true
+  - gcp_integration: true
+  - container_context_display: true
+  - cloud_provider_detection: true
+
+prompt:
+  code: "# Copy devops.toml to ~/.config/starship.toml"
+  description: "A DevOps-optimized Starship configuration that displays container, orchestration, and cloud infrastructure context."
+
+install_instructions: |
+  1. Install Starship: https://starship.rs/guide/#🚀-installation
+  2. Copy devops.toml to ~/.config/starship.toml
+  3. Ensure a Nerd Font is installed and set as your terminal font
+  4. Install optional tools (kubectl, docker, terraform, aws-cli, gcloud)
+  5. Reload your shell configuration file
+  6. Configure kubeconfig, docker context, and AWS/GCP credentials as needed
+
+requirements:
+  - starship >= 1.0
+  - nerd_font: required
+  - git: required
+  - kubectl: recommended
+  - docker: recommended
+  - terraform: recommended
+  - aws-cli: recommended
+  - gcloud: recommended
+
+useful_aliases: |
+  # Add these to your shell config for better DevOps workflow
+  alias k='kubectl'
+  alias kns='kubectl config set-context --current --namespace'
+  alias kctx='kubectl config current-context'
+  alias d='docker'
+  alias tf='terraform'
+
+preview: |
+  ~/projects/infra-automation on main [✓] 🐳 docker-prod ☸ production (default) 💠 main 🌐 my-project (us-central1)
+  ❯

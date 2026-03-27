@@ -1,0 +1,74 @@
+name: Powerline Fish
+id: powerline-fish
+shell: fish
+author: mongsill6
+description: Powerline-style prompt with rich segments for Fish
+version: 1.0.0
+tags:
+  - powerline
+  - git
+  - modern
+requires:
+  nerd_font: true
+  tools:
+    - git
+colors:
+  primary: "#5fa4e6"
+  secondary: "#e6a25f"
+  accent: "#6cc644"
+  warning: "#e74c3c"
+  background: any
+segments:
+  - type: user
+    style: "38;5;39"
+    position: left
+  - type: directory
+    style: "38;5;208"
+    position: left
+  - type: git_branch
+    style: "38;5;71"
+    position: left
+  - type: git_status
+    style: "38;5;196"
+    position: left
+prompt:
+  code: |
+    function fish_prompt
+        set -l last_status $status
+        set -l normal (set_color normal)
+
+        # User segment
+        set_color -b 39 -f 255
+        echo -n ' '(whoami)' '
+
+        # Directory segment
+        set_color -b 208 -f 255
+        echo -n ' '(prompt_pwd)' '
+
+        # Git branch segment
+        set -l git_branch (git symbolic-ref --short HEAD 2>/dev/null)
+        if test -n "$git_branch"
+            set_color -b 71 -f 255
+            echo -n ' ⎇ '$git_branch' '
+        end
+
+        # Git status segment
+        if git rev-parse --git-dir >/dev/null 2>&1
+            set -l git_status (git status --porcelain 2>/dev/null)
+            if test -n "$git_status"
+                set_color -b 196 -f 255
+                echo -n ' ✗ '
+            end
+        end
+
+        # Prompt symbol with status color
+        set_color normal
+        if test $last_status -eq 0
+            set_color 71
+        else
+            set_color 196
+        end
+        echo -n ' ❯ '
+        set_color normal
+    end
+  install_instructions: "Add the function to your ~/.config/fish/config.fish or save it in ~/.config/fish/functions/fish_prompt.fish. Requires a Nerd Font for powerline symbols and git to be installed."

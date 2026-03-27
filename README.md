@@ -1,234 +1,221 @@
-# Awesome CLI Prompts ✨
+```
+ █████╗ ██╗    ██╗███████╗███████╗ ██████╗ ███╗   ███╗███████╗
+██╔══██╗██║    ██║██╔════╝██╔════╝██╔═══██╗████╗ ████║██╔════╝
+███████║██║ █╗ ██║█████╗  ███████╗██║   ██║██╔████╔██║█████╗
+██╔══██║██║███╗██║██╔══╝  ╚════██║██║   ██║██║╚██╔╝██║██╔══╝
+██║  ██║╚███╔███╔╝███████╗███████║╚██████╔╝██║ ╚═╝ ██║███████╗
+╚═╝  ╚═╝ ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
 
-A curated collection of beautiful and functional CLI prompt (PS1/PS2) configurations for Bash, Zsh, Fish, and more.
+ ██████╗██╗     ██╗    ██████╗ ██████╗  ██████╗ ███╗   ███╗██████╗ ████████╗███████╗
+██╔════╝██║     ██║    ██╔══██╗██╔══██╗██╔═══██╗████╗ ████║██╔══██╗╚══██╔══╝██╔════╝
+██║     ██║     ██║    ██████╔╝██████╔╝██║   ██║██╔████╔██║██████╔╝   ██║   ███████╗
+██║     ██║     ██║    ██╔═══╝ ██╔══██╗██║   ██║██║╚██╔╝██║██╔═══╝    ██║   ╚════██║
+╚██████╗███████╗██║    ██║     ██║  ██║╚██████╔╝██║ ╚═╝ ██║██║        ██║   ███████║
+ ╚═════╝╚══════╝╚═╝    ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝        ╚═╝   ╚══════╝
+```
 
-> Make your terminal not just functional, but *beautiful*.
+<div align="center">
 
-## Table of Contents
+[![npm version](https://img.shields.io/npm/v/awesome-cli-prompts)](https://www.npmjs.com/package/awesome-cli-prompts)
+[![CI](https://img.shields.io/github/actions/workflow/status/mongsill6/awesome-cli-prompts/ci.yml?branch=main)](https://github.com/mongsill6/awesome-cli-prompts/actions)
+[![License: MIT](https://img.shields.io/github/license/mongsill6/awesome-cli-prompts)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-- [Why Customize Your Prompt?](#why-customize-your-prompt)
-- [Bash Prompts](#bash-prompts)
-- [Zsh Prompts](#zsh-prompts)
-- [Fish Prompts](#fish-prompts)
-- [Starship (Cross-Shell)](#starship-cross-shell)
-- [Contributing](#contributing)
-- [License](#license)
+**A curated collection of 33 beautiful CLI prompt themes for Bash, Zsh, Fish, and Starship — with a one-command installer.**
+
+</div>
 
 ---
 
-## Why Customize Your Prompt?
+## Quick Start
 
-Your terminal prompt is the interface you interact with hundreds of times a day. A well-designed prompt can:
-
-- Show **git branch & status** at a glance
-- Display **exit codes** when commands fail
-- Indicate **Python virtualenvs**, Node versions, or cloud contexts
-- Use **color** to visually separate information
-- Keep you oriented with **shortened paths**
-
----
-
-## Bash Prompts
-
-### Minimal Clean
+No installation required. Just run:
 
 ```bash
-# ~/.bashrc
-PS1='\[\e[38;5;39m\]\W\[\e[0m\] \[\e[38;5;208m\]❯\[\e[0m\] '
+npx awesome-cli-prompts
 ```
 
-Result: `projects ❯`
-
-### Git-Aware
+Or install globally:
 
 ```bash
-# Shows branch name and dirty status
-parse_git_branch() {
-  git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
-}
-
-parse_git_dirty() {
-  [[ $(git status --porcelain 2>/dev/null) ]] && echo "*"
-}
-
-PS1='\[\e[1;34m\]\w\[\e[33m\]$(parse_git_branch)\[\e[31m\]$(parse_git_dirty)\[\e[0m\] \$ '
+npm install -g awesome-cli-prompts
 ```
 
-Result: `~/projects/myapp (main)* $`
-
-### Powerline Style (No Plugin)
+Then use either command:
 
 ```bash
-PS1='\[\e[48;5;236;38;5;231m\] \u \[\e[48;5;31;38;5;236m\]\[\e[48;5;31;38;5;231m\] \w \[\e[0;38;5;31m\]\[\e[0m\] '
-```
-
-### Exit Code Indicator
-
-```bash
-prompt_cmd() {
-  local exit_code=$?
-  if [ $exit_code -ne 0 ]; then
-    PS1="\[\e[31m\][$exit_code]\[\e[0m\] \w \$ "
-  else
-    PS1="\[\e[32m\]✓\[\e[0m\] \w \$ "
-  fi
-}
-PROMPT_COMMAND=prompt_cmd
+awesome-cli-prompts
+# or the short alias:
+acp
 ```
 
 ---
 
-## Zsh Prompts
+## Features
 
-### Pure-Inspired Minimal
-
-```zsh
-# ~/.zshrc
-autoload -Uz vcs_info
-precmd() { vcs_info }
-zstyle ':vcs_info:git:*' formats ' %F{yellow}(%b)%f'
-
-PROMPT='%F{cyan}%~%f${vcs_info_msg_0_}
-%F{magenta}❯%f '
-```
-
-### Two-Line with Time
-
-```zsh
-PROMPT='%F{240}%*%f %F{blue}%~%f ${vcs_info_msg_0_}
-%(?:%F{green}:%F{red})λ%f '
-```
-
-### Right-Side Prompt
-
-```zsh
-RPROMPT='%F{240}%n@%m%f'
-PROMPT='%F{cyan}%~%f %F{magenta}❯%f '
-```
+- **33 hand-crafted themes** across 4 shells — something for every style
+- **4 shells supported** — Bash, Zsh, Fish, and Starship (cross-shell)
+- **One-command install** — interactive installer applies the theme directly to your shell config
+- **Live preview** — see what a theme looks like before installing
+- **Fuzzy search** — find the perfect theme by name or keyword
+- **Shell auto-detect** — automatically detects your current shell and filters relevant themes
+- **Safe installs** — backs up your existing config before making changes
+- **Easy uninstall** — cleanly remove any installed theme at any time
 
 ---
 
-## Fish Prompts
+## Theme Gallery
 
-### Clean and Colorful
+### Bash (13 themes)
 
-```fish
-# ~/.config/fish/functions/fish_prompt.fish
-function fish_prompt
-    set -l last_status $status
-    set -l cwd (basename (prompt_pwd))
+| Theme | Description |
+|-------|-------------|
+| `corporate-clean` | Polished, minimal prompt suited for professional environments |
+| `devops-k8s` | Shows Kubernetes context and namespace inline |
+| `exit-code` | Displays exit code in red when the last command fails |
+| `git-aware` | Branch name and dirty indicator with color coding |
+| `git-focused` | Detailed git status: staged, unstaged, and untracked counts |
+| `hacker-matrix` | Green-on-black retro aesthetic with bold symbols |
+| `lambda-minimal` | Ultra-minimal lambda symbol prompt, zero noise |
+| `minimal-clean` | Clean directory + arrow, nothing else |
+| `neon-glow` | Vibrant cyan and magenta for dark terminal lovers |
+| `pastel-dream` | Soft pastel colors, easy on the eyes during long sessions |
+| `powerline-noplug` | Powerline-style segments without any plugin dependencies |
+| `rainbow-pride` | Colorful gradient prompt that cycles through the spectrum |
+| `retro-green` | Classic phosphor-green terminal nostalgia |
 
-    if test $last_status -ne 0
-        set_color red
-        echo -n "[$last_status] "
-    end
+### Zsh (10 themes)
 
-    set_color cyan
-    echo -n "$cwd"
+| Theme | Description |
+|-------|-------------|
+| `async-git` | Non-blocking git status via async prompt update |
+| `cloud-devops` | AWS/GCP profile and region displayed in the prompt |
+| `docker-aware` | Shows active Docker context name |
+| `k8s-context` | Kubernetes context and namespace at a glance |
+| `omz-compatible` | Drop-in compatible with Oh My Zsh plugin ecosystem |
+| `p10k-lite` | Powerlevel10k-inspired layout without the full framework |
+| `pure-inspired` | Clean two-line prompt inspired by the Pure theme |
+| `right-prompt` | Puts git/time info in RPROMPT to keep the left side minimal |
+| `transient-prompt` | Previous prompts collapse to a single character after execution |
+| `two-line-time` | Timestamp on the first line, input on the second |
 
-    # Git branch
-    set -l branch (git branch --show-current 2>/dev/null)
-    if test -n "$branch"
-        set_color yellow
-        echo -n " ($branch)"
-    end
+### Fish (5 themes)
 
-    set_color magenta
-    echo -n " ❯ "
-    set_color normal
-end
-```
+| Theme | Description |
+|-------|-------------|
+| `corporate-fish` | Clean, neutral prompt for work environments |
+| `fun-emoji` | Status and context conveyed through expressive emoji |
+| `informative-fish` | Verbose prompt: git, exit code, duration, virtualenv |
+| `minimal-fish` | Bare-minimum Fish prompt for distraction-free focus |
+| `powerline-fish` | Powerline-style segments native to Fish syntax |
+
+### Starship (5 themes)
+
+| Theme | Description |
+|-------|-------------|
+| `data-science` | Python env, conda, Jupyter context — built for data work |
+| `devops` | Git, Docker, Kubernetes, Terraform context in one line |
+| `full-featured` | All modules enabled: language versions, cloud, git, time |
+| `minimal` | Directory and prompt character only — maximum clarity |
+| `writer` | Distraction-free prompt for prose and note-taking workflows |
 
 ---
 
-## Starship (Cross-Shell)
+## Installation
 
-[Starship](https://starship.rs) works with Bash, Zsh, Fish, PowerShell, and more.
-
-### Install
+### Using npx (no install needed)
 
 ```bash
-curl -sS https://starship.rs/install.sh | sh
+npx awesome-cli-prompts
 ```
 
-### Minimal Config
+### Global install via npm
 
-```toml
-# ~/.config/starship.toml
-
-format = """
-$directory\
-$git_branch\
-$git_status\
-$character"""
-
-[directory]
-truncation_length = 3
-style = "bold cyan"
-
-[git_branch]
-format = "[$branch]($style) "
-style = "bold yellow"
-
-[git_status]
-format = '([$all_status$ahead_behind]($style) )'
-style = "bold red"
-
-[character]
-success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)"
+```bash
+npm install -g awesome-cli-prompts
 ```
 
-### Nerd Font Config (Icons)
+### Global install via npx (one-time)
 
-```toml
-# ~/.config/starship.toml
-
-[directory]
-read_only = " 󰌾"
-
-[git_branch]
-symbol = " "
-format = "[$symbol$branch]($style) "
-
-[nodejs]
-symbol = " "
-
-[python]
-symbol = " "
-
-[rust]
-symbol = "🦀 "
-
-[docker_context]
-symbol = " "
+```bash
+npx --yes awesome-cli-prompts install
 ```
 
 ---
 
-## Color Reference
+## Usage
 
-| Code | Color |
-|------|-------|
-| `\e[31m` | Red |
-| `\e[32m` | Green |
-| `\e[33m` | Yellow |
-| `\e[34m` | Blue |
-| `\e[35m` | Magenta |
-| `\e[36m` | Cyan |
-| `\e[0m` | Reset |
+### Interactive mode (recommended)
 
-For 256 colors: `\e[38;5;{N}m` (foreground) or `\e[48;5;{N}m` (background), where N = 0-255.
+```bash
+acp
+```
+
+Launches the interactive TUI: browse, preview, and install themes with arrow keys.
+
+### Install a specific theme
+
+```bash
+acp install git-aware            # auto-detects your shell
+acp install p10k-lite --shell zsh
+acp install minimal --shell starship
+```
+
+### List available themes
+
+```bash
+acp list                         # all themes
+acp list --shell bash            # filter by shell
+```
+
+### Search themes
+
+```bash
+acp search git                   # fuzzy search by keyword
+acp search "minimal"
+```
+
+### Preview a theme
+
+```bash
+acp preview neon-glow
+acp preview devops --shell zsh
+```
+
+### Uninstall a theme
+
+```bash
+acp uninstall git-aware
+```
+
+### Show theme info
+
+```bash
+acp info powerline-noplug
+```
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [docs/INSTALLATION.md](docs/INSTALLATION.md) | Detailed installation guide for each shell |
+| [docs/GALLERY.md](docs/GALLERY.md) | Visual gallery with screenshots of every theme |
+| [docs/CREATING_THEMES.md](docs/CREATING_THEMES.md) | How to create and submit your own theme |
+| [docs/THEME_SCHEMA.md](docs/THEME_SCHEMA.md) | Theme file format and metadata specification |
+| [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) | Shell version compatibility matrix |
+| [docs/FAQ.md](docs/FAQ.md) | Frequently asked questions |
+| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Common issues and how to fix them |
 
 ---
 
 ## Contributing
 
-1. Fork this repo
-2. Add your prompt config in the appropriate section
-3. Include a preview of what it looks like
-4. Submit a PR!
+Contributions are welcome! Whether it's a new theme, a bug fix, or a documentation improvement — please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+
+---
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) — free to use, modify, and distribute.

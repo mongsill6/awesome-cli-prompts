@@ -1,0 +1,35 @@
+# Tests
+tests/
+__tests__/
+*.test.js
+*.spec.js
+coverage/
+.jest/
+jest.config.js
+
+# Documentation (available on GitHub)
+docs/
+CONTRIBUTING.md
+CHANGELOG.md
+GALLERY.md
+
+# Previews
+previews/
+scripts/generate-preview.js
+
+# CI/CD
+.github/
+.circleci/
+.travis.yml
+
+# Development
+.eslintrc*
+.prettierrc*
+.editorconfig
+.vscode/
+.idea/
+
+# Misc
+*.log
+.DS_Store
+Thumbs.db

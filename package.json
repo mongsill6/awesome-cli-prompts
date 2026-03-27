@@ -1,6 +1,6 @@
 {
   "name": "awesome-cli-prompts",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A curated collection of beautiful CLI prompt themes with an installer tool",
   "main": "src/index.js",
   "bin": {
